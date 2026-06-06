@@ -11,7 +11,8 @@ class GatewayJsonReader:
         if not self.path.exists():
             return []
         data = load_json_file(self.path)
-        items = data.get("gateways") or data
-        if isinstance(items, dict):
-            items = list(items.values())
-        return [map_gateway(item) for item in items]
+        platforms = data.get("platforms", {})
+        gateways = []
+        for platform, info in platforms.items():
+            gateways.append(map_gateway(info, platform))
+        return gateways

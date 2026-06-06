@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import date
 
 from app.aggregators.usage_daily import UsageDailyAggregator
 from app.config import settings
@@ -68,11 +69,8 @@ class SyncWorker:
 
         if sessions:
             await self._sessions.upsert_many(sessions)
-            max_updated = max(
-                s.started_at if s.is_active else (s.ended_at or s.started_at)
-                for s in sessions
-            )
-            await self._sync_state.set(KEY_SESSION, str(max_updated))
+            max_started = max(s.started_at for s in sessions)
+            await self._sync_state.set(KEY_SESSION, str(max_started))
 
         if events:
             await self._events.upsert_many(events)
@@ -85,8 +83,6 @@ class SyncWorker:
             await self._cron.upsert_many(cron_jobs)
 
         await self._aggregator.aggregate_recent(self._storage, days=30)
-        from datetime import date
-
         await self._sync_state.set(KEY_USAGE, date.today().isoformat())
         logger.info(
             "Sync complete: %d sessions, %d events, %d gateways, %d cron",

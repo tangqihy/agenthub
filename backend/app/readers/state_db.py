@@ -12,44 +12,50 @@ class HermesStateDbReader:
         uri = f"file:{self.db_path}?mode=ro"
         return sqlite3.connect(uri, uri=True)
 
-    def fetch_sessions_since(self, updated_after: int | None) -> list[dict]:
+    def fetch_sessions_since(self, started_after: int | None) -> list[dict]:
+        """读 sessions，用 started_at 做增量（无 updated_at 字段）。"""
         if not self.db_path.exists():
             return []
         conn = self._connect()
         conn.row_factory = sqlite3.Row
-        if updated_after is not None:
+        if started_after is not None:
             rows = conn.execute(
-                "SELECT * FROM sessions WHERE updated_at > ? ORDER BY updated_at ASC",
-                (updated_after,),
+                "SELECT * FROM sessions WHERE started_at > ? ORDER BY started_at ASC",
+                (started_after,),
             ).fetchall()
         else:
-            rows = conn.execute("SELECT * FROM sessions ORDER BY updated_at ASC").fetchall()
+            rows = conn.execute(
+                "SELECT * FROM sessions ORDER BY started_at ASC"
+            ).fetchall()
         conn.close()
         return [dict(row) for row in rows]
 
-    def fetch_messages_since(self, created_after: int | None) -> list[dict]:
+    def fetch_messages_since(self, timestamp_after: int | None) -> list[dict]:
+        """读 messages，用 timestamp 做增量。"""
         if not self.db_path.exists():
             return []
         conn = self._connect()
         conn.row_factory = sqlite3.Row
-        if created_after is not None:
+        if timestamp_after is not None:
             rows = conn.execute(
-                "SELECT * FROM messages WHERE created_at > ? ORDER BY created_at ASC",
-                (created_after,),
+                "SELECT * FROM messages WHERE timestamp > ? ORDER BY timestamp ASC",
+                (timestamp_after,),
             ).fetchall()
         else:
             rows = conn.execute(
-                "SELECT * FROM messages ORDER BY created_at ASC"
+                "SELECT * FROM messages ORDER BY timestamp ASC"
             ).fetchall()
         conn.close()
         return [dict(row) for row in rows]
 
-    def read_sessions(self, updated_after: int | None = None):
-        return [map_session_row(row) for row in self.fetch_sessions_since(updated_after)]
+    def read_sessions(self, started_after: int | None = None):
+        return [
+            map_session_row(row) for row in self.fetch_sessions_since(started_after)
+        ]
 
-    def read_events(self, created_after: int | None = None):
+    def read_events(self, timestamp_after: int | None = None):
         events = []
-        for row in self.fetch_messages_since(created_after):
+        for row in self.fetch_messages_since(timestamp_after):
             event = map_message_row(row)
             if event:
                 events.append(event)
