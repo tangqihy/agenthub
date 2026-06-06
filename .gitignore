@@ -10,3 +10,4 @@ backend/data/
 backend/**/__pycache__/
 backend/.pytest_cache/
 backend/fixtures/hermes/state.db
+backend/.venv/
