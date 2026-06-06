@@ -1,0 +1,48 @@
+.page {
+  min-height: 100vh;
+  background: #f5f6f8;
+  padding: 12px 12px 70px;
+  box-sizing: border-box;
+}
+
+.section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.section__title {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.token-row {
+  display: flex;
+  gap: 8px;
+}
+
+.source-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.cron-stat {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #666;
+}

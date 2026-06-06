@@ -1,0 +1,53 @@
+.timeline {
+  padding: 8px 0;
+}
+
+.timeline-item {
+  background: #f7f8fa;
+  border-left: 3px solid #1989fa;
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.timeline-item--user_message {
+  border-left-color: #07c160;
+  background: #eef9f1;
+}
+
+.timeline-item--assistant_message {
+  border-left-color: #1989fa;
+}
+
+.timeline-item--tool_call,
+.timeline-item--tool_result {
+  border-left-color: #ff976a;
+}
+
+.timeline-item--token_usage {
+  border-left-color: #7232dd;
+}
+
+.timeline-item--error {
+  border-left-color: #ee0a24;
+  background: #fff1f0;
+}
+
+.timeline-item__type {
+  display: block;
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.timeline-item__content {
+  font-size: 14px;
+  color: #333;
+  word-break: break-all;
+}
+
+.timeline-empty {
+  text-align: center;
+  color: #999;
+  padding: 40px 0;
+}

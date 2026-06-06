@@ -1,0 +1,31 @@
+{
+  "gateways": [
+    {
+      "id": "gw-wechat",
+      "platform": "wechat",
+      "status": "online",
+      "last_seen": 1780746037416,
+      "message_count": 128,
+      "latency_ms": 230,
+      "error_count": 0
+    },
+    {
+      "id": "gw-feishu",
+      "platform": "feishu",
+      "status": "online",
+      "last_seen": 1780746037416,
+      "message_count": 45,
+      "latency_ms": 180,
+      "error_count": 1
+    },
+    {
+      "id": "gw-webhook",
+      "platform": "webhook",
+      "status": "offline",
+      "last_seen": 1780486837416,
+      "message_count": 10,
+      "latency_ms": null,
+      "error_count": 3
+    }
+  ]
+}

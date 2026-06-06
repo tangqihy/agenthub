@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      STORAGE_BACKEND: sqlite
+      DATABASE_PATH: /app/data/agenthub.db
+      HERMES_DATA_DIR: /root/.hermes
+      CRON_MOCK: "false"
+      HERMES_BIN: hermes
+      SYNC_INTERVAL_SECONDS: 5
+      API_BEARER_TOKEN: ${API_BEARER_TOKEN:-changeme}
+    volumes:
+      - /root/.hermes:/root/.hermes:ro
+      - agenthub-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  agenthub-data:

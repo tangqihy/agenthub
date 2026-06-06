@@ -1,0 +1,19 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      STORAGE_BACKEND: sqlite
+      DATABASE_PATH: /app/data/agenthub.db
+      HERMES_DATA_DIR: /app/fixtures/hermes
+      CRON_MOCK: "true"
+      SYNC_INTERVAL_SECONDS: 5
+    volumes:
+      - ./backend/fixtures:/app/fixtures
+      - agenthub-data:/app/data
+
+volumes:
+  agenthub-data:

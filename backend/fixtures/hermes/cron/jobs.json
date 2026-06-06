@@ -1,0 +1,26 @@
+{
+  "jobs": [
+    {
+      "id": "cron-build",
+      "name": "Nightly Android Build",
+      "schedule": "0 2 * * *",
+      "status": "active",
+      "last_run_at": 1780717237417,
+      "next_run_at": 1780803637417,
+      "payload": {
+        "command": "build android"
+      }
+    },
+    {
+      "id": "cron-backup",
+      "name": "Database Backup",
+      "schedule": "0 4 * * 0",
+      "status": "paused",
+      "last_run_at": 1780486837417,
+      "next_run_at": null,
+      "payload": {
+        "command": "backup"
+      }
+    }
+  ]
+}
