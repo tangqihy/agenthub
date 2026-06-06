@@ -1,19 +1,80 @@
 .gateway-badge {
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
   margin-bottom: 8px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn var(--transition-normal) ease-out;
+  border: 1px solid transparent;
+  transition: border-color var(--transition-normal);
+
+  &--online {
+    border-color: rgba(16, 185, 129, 0.15);
+  }
+
+  &--offline {
+    border-color: rgba(239, 68, 68, 0.1);
+  }
+}
+
+.gateway-badge__icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border-radius: var(--radius-sm);
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.gateway-badge__info {
+  flex: 1;
+  min-width: 0;
 }
 
 .gateway-badge__name {
   display: block;
   font-size: 14px;
   font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
 }
 
-.gateway-badge__meta {
+.gateway-badge__status {
   display: block;
   font-size: 12px;
-  color: #666;
-  margin-top: 4px;
+  font-weight: 500;
+
+  .gateway-badge--online & {
+    color: #059669;
+  }
+
+  .gateway-badge--offline & {
+    color: #dc2626;
+  }
+}
+
+.gateway-badge__indicator {
+  flex-shrink: 0;
+}
+
+.gateway-badge__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+
+  .gateway-badge--online & {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+
+  .gateway-badge--offline & {
+    background: #ef4444;
+  }
 }

@@ -1,29 +1,99 @@
 .token-card {
   flex: 1;
-  background: #fff;
-  border-radius: 8px;
-  padding: 12px;
+  position: relative;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
   text-align: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  animation: scaleIn var(--transition-slow) ease-out;
+  transition: transform var(--transition-fast), box-shadow var(--transition-normal);
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &--primary {
+    border: 1px solid rgba(99, 102, 241, 0.12);
+
+    .token-card__value {
+      background: linear-gradient(135deg, #6366f1, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .token-card__glow {
+      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+    }
+  }
+
+  &--success {
+    border: 1px solid rgba(16, 185, 129, 0.12);
+
+    .token-card__value {
+      background: linear-gradient(135deg, #10b981, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .token-card__glow {
+      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+    }
+  }
+
+  &--warning {
+    border: 1px solid rgba(245, 158, 11, 0.12);
+
+    .token-card__value {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .token-card__glow {
+      background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+    }
+  }
+}
+
+.token-card__glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  pointer-events: none;
 }
 
 .token-card__label {
+  position: relative;
   display: block;
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
 }
 
 .token-card__value {
+  position: relative;
   display: block;
-  font-size: 20px;
-  font-weight: 700;
-  color: #1989fa;
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
 }
 
 .token-card__cost {
+  position: relative;
   display: block;
   font-size: 11px;
-  color: #999;
-  margin-top: 2px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
 }

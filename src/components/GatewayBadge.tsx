@@ -8,16 +8,32 @@ const PLATFORM_LABEL: Record<string, string> = {
   webhook: 'Webhook',
 }
 
+const PLATFORM_ICON: Record<string, string> = {
+  wechat: '💬',
+  feishu: '🐦',
+  webhook: '🔗',
+}
+
 export default function GatewayBadge({ gateway }: { gateway: Gateway }) {
   const online = gateway.status === 'online'
+  const platform = gateway.platform
+
   return (
-    <View className='gateway-badge'>
-      <Text className='gateway-badge__name'>
-        {online ? '🟢' : '🔴'} {PLATFORM_LABEL[gateway.platform] || gateway.platform}
-      </Text>
-      <Text className='gateway-badge__meta'>
-        延迟 {gateway.latency_ms ?? '-'}ms · 错误 {gateway.error_count}
-      </Text>
+    <View className={`gateway-badge ${online ? 'gateway-badge--online' : 'gateway-badge--offline'}`}>
+      <View className='gateway-badge__icon'>
+        <Text>{PLATFORM_ICON[platform] || '🔌'}</Text>
+      </View>
+      <View className='gateway-badge__info'>
+        <Text className='gateway-badge__name'>
+          {PLATFORM_LABEL[platform] || platform}
+        </Text>
+        <Text className='gateway-badge__status'>
+          {online ? '已连接' : '未连接'}
+        </Text>
+      </View>
+      <View className='gateway-badge__indicator'>
+        <View className='gateway-badge__dot' />
+      </View>
     </View>
   )
 }

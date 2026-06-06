@@ -1,0 +1,23 @@
+.offline-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(90deg, #fef3c7, #fde68a);
+  padding: 8px 16px;
+  animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.offline-banner__pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+.offline-banner__text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #92400e;
+}

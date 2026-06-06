@@ -1,9 +1,18 @@
 import { View, Text } from '@tarojs/components'
+import './OfflineBanner.scss'
 
-export default function OfflineBanner() {
+interface Props {
+  visible: boolean
+  message?: string
+}
+
+export default function OfflineBanner({ visible, message = '网络连接已断开' }: Props) {
+  if (!visible) return null
+
   return (
-    <View style={{ background: '#fff1f0', padding: '8px 12px', marginBottom: 8 }}>
-      <Text style={{ color: '#ee0a24', fontSize: 13 }}>控制服务离线，请检查 Backend API</Text>
+    <View className='offline-banner'>
+      <View className='offline-banner__pulse' />
+      <Text className='offline-banner__text'>⚠️ {message}</Text>
     </View>
   )
 }
