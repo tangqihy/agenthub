@@ -61,7 +61,7 @@ export default function AgentsPage() {
             <View className='skeleton skeleton-card' />
           </>
         )}
-        {agents && agents.length === 0 && (
+        {!loading && agents && agents.length === 0 && (
           <View className='agents-empty'>
             <Text className='agents-empty__icon'>📭</Text>
             <Text className='agents-empty__text'>暂无 Agent</Text>

@@ -19,12 +19,14 @@ export function usePolling<T>(fetcher: () => Promise<T>, intervalMs = 5000, enab
     }
   }, [])
 
+  // fetcher 变化时立即重新拉取（runtime/search 等过滤条件变化）
   useEffect(() => {
     if (!enabled) return
+    setLoading(true)
     refresh()
     const timer = setInterval(refresh, intervalMs)
     return () => clearInterval(timer)
-  }, [enabled, intervalMs, refresh])
+  }, [enabled, intervalMs, refresh, fetcher])
 
   return { data, loading, error, refresh }
 }
