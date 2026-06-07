@@ -85,11 +85,21 @@ def map_message_row(row: dict) -> Event | None:
     return None
 
 
+def _extract_schedule(item: dict) -> str:
+    """Extract cron schedule expression, handling both str and dict formats."""
+    if display := item.get("schedule_display"):
+        return display
+    sched = item.get("schedule", "")
+    if isinstance(sched, dict):
+        return sched.get("expr", "")
+    return str(sched) if sched else ""
+
+
 def map_cron_job(item: dict) -> CronJob:
     return CronJob(
         id=item["id"],
         name=item.get("name") or item["id"],
-        schedule=item.get("schedule_display") or item.get("schedule", {}).get("expr", ""),
+        schedule=_extract_schedule(item),
         status="paused" if item.get("paused_at") else "active",
         last_run_at=_to_ms(item.get("last_run_at")),
         next_run_at=_to_ms(item.get("next_run_at")),
