@@ -2,6 +2,7 @@ export default defineAppConfig({
   pages: [
     'pages/dashboard/index',
     'pages/login/index',
+    'pages/chat/index',
     'pages/sessions/index',
     'pages/sessions/detail',
     'pages/cron/index',

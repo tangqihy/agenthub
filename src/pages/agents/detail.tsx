@@ -253,6 +253,13 @@ export default function AgentDetailPage() {
       {/* Action Bar */}
       <View className='agent-detail__actions'>
         <View
+          className='agent-detail__action-btn agent-detail__action-btn--chat'
+          onClick={() => Taro.navigateTo({ url: `/pages/chat/index?agentId=${agentId}` })}
+        >
+          <Text className='agent-detail__action-icon'>💬</Text>
+          <Text className='agent-detail__action-label'>开始对话</Text>
+        </View>
+        <View
           className='agent-detail__action-btn agent-detail__action-btn--primary'
           onClick={() => Taro.navigateTo({ url: `/pages/agents/editor?id=${agentId}` })}
         >

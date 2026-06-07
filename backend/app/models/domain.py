@@ -116,3 +116,12 @@ class DashboardData(BaseModel):
     top_sessions: list[TopSession]
     gateways: list[Gateway]
     cron_summary: dict
+
+
+class ChatMessage(BaseModel):
+    id: str
+    agent_id: str
+    conversation_id: str
+    role: str  # 'user' or 'assistant'
+    content: str
+    created_at: int = 0

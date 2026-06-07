@@ -4,6 +4,7 @@ from app.config import settings
 from app.cron.queue import CronCommandQueue, CronController
 from app.repositories import (
     AgentRepository,
+    ChatRepository,
     CronRepository,
     EventRepository,
     GatewayRepository,
@@ -23,6 +24,7 @@ class AppState:
     usage: UsageRepository
     gateways: GatewayRepository
     agents: AgentRepository
+    chat: ChatRepository
     sync_worker: SyncWorker
     cron_queue: CronCommandQueue
     cron_controller: CronController
@@ -48,6 +50,7 @@ async def init_app_state() -> AppState:
         usage=UsageRepository(storage),
         gateways=GatewayRepository(storage),
         agents=AgentRepository(storage),
+        chat=ChatRepository(storage),
         sync_worker=sync_worker,
         cron_queue=cron_queue,
         cron_controller=cron_controller,

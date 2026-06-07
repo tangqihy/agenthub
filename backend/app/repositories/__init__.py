@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.models.domain import Agent, AgentRun, AgentVersion, CronJob, Event, Session, UsageDaily
+from app.models.domain import Agent, AgentRun, AgentVersion, ChatMessage, CronJob, Event, Session, UsageDaily
 from app.storage.base import StorageBackend
 
 
@@ -141,3 +141,17 @@ class AgentRepository:
 
     async def get_children(self, parent_agent_id: str) -> list[Agent]:
         return await self._storage.get_child_agents(parent_agent_id)
+
+
+class ChatRepository:
+    def __init__(self, storage: StorageBackend) -> None:
+        self._storage = storage
+
+    async def create_message(self, msg: ChatMessage) -> None:
+        await self._storage.create_chat_message(msg)
+
+    async def list_messages(self, conversation_id: str) -> list[ChatMessage]:
+        return await self._storage.list_chat_messages(conversation_id)
+
+    async def list_conversations(self, agent_id: str, limit: int = 20) -> list[dict]:
+        return await self._storage.list_conversations(agent_id, limit)

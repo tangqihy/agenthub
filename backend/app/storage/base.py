@@ -4,6 +4,7 @@ from app.models.domain import (
     Agent,
     AgentRun,
     AgentVersion,
+    ChatMessage,
     CronJob,
     Event,
     Gateway,
@@ -82,3 +83,8 @@ class StorageBackend(Protocol):
     async def get_child_agents(self, parent_agent_id: str) -> list[Agent]: ...
 
     async def set_sync_state(self, key: str, value: str) -> None: ...
+
+    # --- V2.2: Chat ---
+    async def create_chat_message(self, msg: ChatMessage) -> None: ...
+    async def list_chat_messages(self, conversation_id: str) -> list[ChatMessage]: ...
+    async def list_conversations(self, agent_id: str, limit: int = 20) -> list[dict]: ...

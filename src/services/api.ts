@@ -129,6 +129,21 @@ export const api = {
   agentTree: (id: string) =>
     request<{ agent: Agent; parent: Agent | null; children: Agent[] }>(`/api/v2/agents/${id}/tree`),
 
+  // Chat
+  agentChat: (agentId: string, message: string, conversationId?: string) =>
+    request<{ reply: string; conversation_id: string; user_message_id: string; assistant_message_id: string }>(
+      `/api/v2/agents/${agentId}/chat`,
+      { method: 'POST', data: { message, conversation_id: conversationId } },
+    ),
+  agentConversations: (agentId: string) =>
+    request<Array<{ conversation_id: string; last_message_at: number; message_count: number }>>(
+      `/api/v2/agents/${agentId}/conversations`,
+    ),
+  agentConversation: (agentId: string, conversationId: string) =>
+    request<{ conversation_id: string; messages: Array<{ id: string; role: string; content: string; created_at: number }> }>(
+      `/api/v2/agents/${agentId}/conversations/${conversationId}`,
+    ),
+
   // Auth
   authVerify: () => request<{ status: string }>('/api/v1/auth/verify'),
   authConfig: () => request<{ auth_required: boolean }>('/api/v1/auth/config'),

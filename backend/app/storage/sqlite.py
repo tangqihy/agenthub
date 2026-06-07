@@ -9,6 +9,7 @@ from app.models.domain import (
     Agent,
     AgentRun,
     AgentVersion,
+    ChatMessage,
     CronJob,
     Event,
     Gateway,
@@ -698,3 +699,53 @@ class SQLiteBackend(StorageBackend):
             runtime_session_id=row["runtime_session_id"], status=row["status"],
             started_at=row["started_at"], ended_at=row["ended_at"],
         )
+
+    # --- V2.2: Chat ---
+
+    async def create_chat_message(self, msg: ChatMessage) -> None:
+        async with aiosqlite.connect(self.database_path) as db:
+            await db.execute(
+                """INSERT INTO chat_messages (id, agent_id, conversation_id, role, content, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (msg.id, msg.agent_id, msg.conversation_id, msg.role, msg.content, msg.created_at),
+            )
+            await db.commit()
+
+    async def list_chat_messages(self, conversation_id: str) -> list[ChatMessage]:
+        async with aiosqlite.connect(self.database_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                "SELECT * FROM chat_messages WHERE conversation_id = ? ORDER BY created_at ASC",
+                (conversation_id,),
+            ) as cursor:
+                rows = await cursor.fetchall()
+        return [
+            ChatMessage(
+                id=row["id"],
+                agent_id=row["agent_id"],
+                conversation_id=row["conversation_id"],
+                role=row["role"],
+                content=row["content"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    async def list_conversations(self, agent_id: str, limit: int = 20) -> list[dict]:
+        async with aiosqlite.connect(self.database_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                """SELECT conversation_id, MAX(created_at) AS last_message_at, COUNT(*) AS message_count
+                   FROM chat_messages WHERE agent_id = ?
+                   GROUP BY conversation_id ORDER BY last_message_at DESC LIMIT ?""",
+                (agent_id, limit),
+            ) as cursor:
+                rows = await cursor.fetchall()
+        return [
+            {
+                "conversation_id": row["conversation_id"],
+                "last_message_at": row["last_message_at"],
+                "message_count": row["message_count"],
+            }
+            for row in rows
+        ]
