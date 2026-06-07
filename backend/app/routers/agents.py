@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from app.deps import get_state
-from app.models.domain import Agent, AgentRun, AgentVersion
+from app.models.domain import Agent, AgentRun, AgentVersion, Session
 
 router = APIRouter(prefix="/api/v2/agents", tags=["agents-v2"])
 
@@ -190,6 +190,7 @@ async def clone_agent(agent_id: str, state=Depends(get_state)):
         current_version=1,
         created_at=now,
         updated_at=now,
+        derived_from_agent_id=agent_id,
     )
     await state.agents.create(new_agent)
     new_version = AgentVersion(
@@ -231,6 +232,7 @@ async def create_run(agent_id: str, body: RunCreate, state=Depends(get_state)):
         ended_at=now if body.status != "running" else None,
     )
     await state.agents.create_run(run)
+    await state.agents.increment_usage(agent_id)
     return run
 
 
@@ -253,3 +255,67 @@ async def list_agent_sessions(
             if session:
                 sessions.append(session)
     return sessions[:limit]
+
+
+# --- V2.1: Agent Evolution endpoints ---
+
+
+@router.post("/from-session/{session_id}", response_model=Agent, status_code=201)
+async def create_agent_from_session(session_id: str, state=Depends(get_state)):
+    """Create a new agent from an existing session."""
+    session = await state.sessions.get(session_id)
+    if not session:
+        raise HTTPException(404, "Session not found")
+    now = int(time.time())
+    agent = Agent(
+        id=_new_id(),
+        name=session.title,
+        description=f"从 Session「{session.title}」创建",
+        runtime="hermes",
+        source_session_id=session_id,
+        created_at=now,
+        updated_at=now,
+    )
+    await state.agents.create(agent)
+
+    # Create initial version with empty config
+    config = {"model": "", "prompt": "", "skills": [], "mcp": []}
+    version = AgentVersion(
+        id=_new_id("av"),
+        agent_id=agent.id,
+        version=1,
+        config_json=config,
+        created_at=now,
+    )
+    await state.agents.create_version(version)
+    return agent
+
+
+@router.get("/catalog", response_model=list[Agent])
+async def agent_catalog(
+    sort: str = Query(default="recent", regex="^(usage|recent|updated)$"),
+    limit: int = Query(default=50, le=100),
+    state=Depends(get_state),
+):
+    """Get agents catalog sorted by usage, recent, or updated."""
+    return await state.agents.catalog(sort=sort, limit=limit)
+
+
+@router.get("/{agent_id}/tree")
+async def agent_tree(agent_id: str, state=Depends(get_state)):
+    """Get agent with its parent and children (derivation tree)."""
+    agent = await state.agents.get(agent_id)
+    if not agent:
+        raise HTTPException(404, "Agent not found")
+
+    parent = None
+    if agent.derived_from_agent_id:
+        parent = await state.agents.get(agent.derived_from_agent_id)
+
+    children = await state.agents.get_children(agent_id)
+
+    return {
+        "agent": agent,
+        "parent": parent,
+        "children": children,
+    }

@@ -317,3 +317,174 @@ async def test_agent_clone_workflow(storage):
     await storage.delete_agent("clone-1")
     assert await storage.get_agent("src") is not None
     assert len(await storage.list_agent_versions("src")) == 2
+
+
+# ── 8. V2.1: Agent usage tracking ────────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_agent_usage_tracking(storage):
+    """Verify usage_count increments on each increment call."""
+    agent = _make_agent(usage_count=0, last_used_at=None)
+    await storage.create_agent(agent)
+
+    # Initial state
+    fetched = await storage.get_agent("agent-1")
+    assert fetched.usage_count == 0
+    assert fetched.last_used_at is None
+
+    # First increment
+    await storage.increment_agent_usage("agent-1")
+    fetched = await storage.get_agent("agent-1")
+    assert fetched.usage_count == 1
+    assert fetched.last_used_at is not None
+    first_used_at = fetched.last_used_at
+
+    # Second increment
+    await storage.increment_agent_usage("agent-1")
+    fetched = await storage.get_agent("agent-1")
+    assert fetched.usage_count == 2
+    assert fetched.last_used_at >= first_used_at
+
+    # Non-existent agent should not error (no-op)
+    await storage.increment_agent_usage("nonexistent")
+
+
+# ── 9. V2.1: Agent from-session ─────────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_agent_from_session(storage):
+    """Create an agent from a session and verify source_session_id is set."""
+    from app.models.domain import Session
+
+    # Create a session first
+    session = Session(
+        id="sess-test-1",
+        external_id="ext-1",
+        title="My Test Session",
+        source="hermes",
+        started_at=1000,
+        is_active=True,
+    )
+    await storage.upsert_sessions([session])
+
+    # Simulate creating an agent from session (as the router does)
+    agent = _make_agent(
+        id="from-sess-1",
+        name=session.title,
+        description=f"从 Session「{session.title}」创建",
+        source_session_id=session.id,
+    )
+    await storage.create_agent(agent)
+
+    fetched = await storage.get_agent("from-sess-1")
+    assert fetched is not None
+    assert fetched.name == "My Test Session"
+    assert "My Test Session" in fetched.description
+    assert fetched.source_session_id == "sess-test-1"
+
+
+# ── 10. V2.1: Agent catalog sort ─────────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_agent_catalog_sort(storage):
+    """Verify catalog returns agents sorted by chosen field."""
+    # Create agents with different timestamps and usage counts
+    await storage.create_agent(
+        _make_agent(id="a1", name="Old Agent", created_at=100, updated_at=300, usage_count=5)
+    )
+    await storage.create_agent(
+        _make_agent(id="a2", name="New Agent", created_at=300, updated_at=100, usage_count=1)
+    )
+    await storage.create_agent(
+        _make_agent(id="a3", name="Popular Agent", created_at=200, updated_at=200, usage_count=10)
+    )
+
+    # Sort by recent (created_at DESC)
+    recent = await storage.list_agents_catalog(sort="recent")
+    assert len(recent) == 3
+    assert [a.id for a in recent] == ["a2", "a3", "a1"]
+
+    # Sort by updated (updated_at DESC)
+    updated = await storage.list_agents_catalog(sort="updated")
+    assert len(updated) == 3
+    assert [a.id for a in updated] == ["a1", "a3", "a2"]
+
+    # Sort by usage (usage_count DESC)
+    usage = await storage.list_agents_catalog(sort="usage")
+    assert len(usage) == 3
+    assert [a.id for a in usage] == ["a3", "a1", "a2"]
+
+    # Default sort is recent
+    default_sort = await storage.list_agents_catalog()
+    assert [a.id for a in default_sort] == ["a2", "a3", "a1"]
+
+
+# ── 11. V2.1: Agent tree (parent/children) ───────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_agent_tree(storage):
+    """Verify parent/children derivation tree relationships."""
+    # Create parent agent
+    parent = _make_agent(id="parent-1", name="Parent Agent")
+    await storage.create_agent(parent)
+
+    # Create children agents that derive from parent
+    child1 = _make_agent(
+        id="child-1", name="Child 1", derived_from_agent_id="parent-1", created_at=2000
+    )
+    child2 = _make_agent(
+        id="child-2", name="Child 2", derived_from_agent_id="parent-1", created_at=3000
+    )
+    await storage.create_agent(child1)
+    await storage.create_agent(child2)
+
+    # Create an unrelated agent
+    unrelated = _make_agent(id="other-1", name="Unrelated")
+    await storage.create_agent(unrelated)
+
+    # Verify children
+    children = await storage.get_child_agents("parent-1")
+    assert len(children) == 2
+    child_ids = [c.id for c in children]
+    assert "child-1" in child_ids
+    assert "child-2" in child_ids
+
+    # Verify parent reference on child
+    fetched_child = await storage.get_agent("child-1")
+    assert fetched_child.derived_from_agent_id == "parent-1"
+
+    # Verify unrelated agent has no parent
+    fetched_other = await storage.get_agent("other-1")
+    assert fetched_other.derived_from_agent_id is None
+
+    # Verify unrelated agent has no children
+    assert len(await storage.get_child_agents("other-1")) == 0
+
+    # Verify non-existent agent has no children
+    assert len(await storage.get_child_agents("nonexistent")) == 0
+
+
+# ── 12. V2.1: New fields round-trip ──────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_agent_new_fields_roundtrip(storage):
+    """Verify all V2.1 fields survive database round-trip."""
+    agent = _make_agent(
+        notes="Some important notes",
+        use_cases="Code review, writing",
+        caveats="Does not handle images",
+        source_session_id="sess-abc",
+        derived_from_agent_id="parent-xyz",
+        usage_count=42,
+        last_used_at=5000,
+    )
+    await storage.create_agent(agent)
+
+    fetched = await storage.get_agent("agent-1")
+    assert fetched.notes == "Some important notes"
+    assert fetched.use_cases == "Code review, writing"
+    assert fetched.caveats == "Does not handle images"
+    assert fetched.source_session_id == "sess-abc"
+    assert fetched.derived_from_agent_id == "parent-xyz"
+    assert fetched.usage_count == 42
+    assert fetched.last_used_at == 5000

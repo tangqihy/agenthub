@@ -70,7 +70,14 @@ CREATE TABLE IF NOT EXISTS agents (
     publish_scope TEXT NOT NULL DEFAULT 'private',
     current_version INTEGER NOT NULL DEFAULT 1,
     created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL
+    updated_at INTEGER NOT NULL,
+    usage_count INTEGER NOT NULL DEFAULT 0,
+    last_used_at INTEGER,
+    source_session_id TEXT,
+    derived_from_agent_id TEXT,
+    notes TEXT NOT NULL DEFAULT '',
+    use_cases TEXT NOT NULL DEFAULT '',
+    caveats TEXT NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS agent_versions (

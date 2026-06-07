@@ -65,6 +65,21 @@ class SQLiteBackend(StorageBackend):
         schema = SCHEMA_PATH.read_text(encoding="utf-8")
         async with aiosqlite.connect(self.database_path) as db:
             await db.executescript(schema)
+            # V2.1 migration: add new columns to agents if not exist
+            v21_columns = [
+                ("usage_count", "INTEGER NOT NULL DEFAULT 0"),
+                ("last_used_at", "INTEGER"),
+                ("source_session_id", "TEXT"),
+                ("derived_from_agent_id", "TEXT"),
+                ("notes", "TEXT NOT NULL DEFAULT ''"),
+                ("use_cases", "TEXT NOT NULL DEFAULT ''"),
+                ("caveats", "TEXT NOT NULL DEFAULT ''"),
+            ]
+            for col_name, col_def in v21_columns:
+                try:
+                    await db.execute(f"ALTER TABLE agents ADD COLUMN {col_name} {col_def}")
+                except Exception:
+                    pass  # column already exists
             await db.commit()
 
     async def list_sessions(
@@ -537,9 +552,13 @@ class SQLiteBackend(StorageBackend):
         async with aiosqlite.connect(self.database_path) as db:
             await db.execute(
                 """INSERT INTO agents (id, name, description, avatar, runtime, publish_scope,
-                   current_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                   current_version, created_at, updated_at,
+                   usage_count, last_used_at, source_session_id, derived_from_agent_id,
+                   notes, use_cases, caveats) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (agent.id, agent.name, agent.description, agent.avatar, agent.runtime,
-                 agent.publish_scope, agent.current_version, agent.created_at, agent.updated_at),
+                 agent.publish_scope, agent.current_version, agent.created_at, agent.updated_at,
+                 agent.usage_count, agent.last_used_at, agent.source_session_id,
+                 agent.derived_from_agent_id, agent.notes, agent.use_cases, agent.caveats),
             )
             await db.commit()
 
@@ -547,9 +566,14 @@ class SQLiteBackend(StorageBackend):
         async with aiosqlite.connect(self.database_path) as db:
             await db.execute(
                 """UPDATE agents SET name=?, description=?, avatar=?, runtime=?,
-                   publish_scope=?, current_version=?, updated_at=? WHERE id=?""",
+                   publish_scope=?, current_version=?, updated_at=?,
+                   usage_count=?, last_used_at=?, source_session_id=?,
+                   derived_from_agent_id=?, notes=?, use_cases=?, caveats=? WHERE id=?""",
                 (agent.name, agent.description, agent.avatar, agent.runtime,
-                 agent.publish_scope, agent.current_version, agent.updated_at, agent.id),
+                 agent.publish_scope, agent.current_version, agent.updated_at,
+                 agent.usage_count, agent.last_used_at, agent.source_session_id,
+                 agent.derived_from_agent_id, agent.notes, agent.use_cases, agent.caveats,
+                 agent.id),
             )
             await db.commit()
 
@@ -608,6 +632,41 @@ class SQLiteBackend(StorageBackend):
                  run.status, run.started_at, run.ended_at),
             )
             await db.commit()
+    async def increment_agent_usage(self, agent_id: str) -> None:
+        now = int(time.time())
+        async with aiosqlite.connect(self.database_path) as db:
+            await db.execute(
+                "UPDATE agents SET usage_count = usage_count + 1, last_used_at = ? WHERE id = ?",
+                (now, agent_id),
+            )
+            await db.commit()
+
+    async def list_agents_catalog(
+        self, *, sort: str = "recent", limit: int = 50
+    ) -> list[Agent]:
+        order_map = {
+            "usage": "usage_count DESC",
+            "recent": "created_at DESC",
+            "updated": "updated_at DESC",
+        }
+        order = order_map.get(sort, order_map["recent"])
+        query = f"SELECT * FROM agents ORDER BY {order} LIMIT ?"
+        async with aiosqlite.connect(self.database_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(query, (limit,)) as cursor:
+                rows = await cursor.fetchall()
+        return [self._agent_from_row(row) for row in rows]
+
+    async def get_child_agents(self, parent_agent_id: str) -> list[Agent]:
+        async with aiosqlite.connect(self.database_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                "SELECT * FROM agents WHERE derived_from_agent_id = ? ORDER BY created_at DESC",
+                (parent_agent_id,),
+            ) as cursor:
+                rows = await cursor.fetchall()
+        return [self._agent_from_row(row) for row in rows]
+
 
     @staticmethod
     def _agent_from_row(row: aiosqlite.Row) -> Agent:
@@ -616,6 +675,13 @@ class SQLiteBackend(StorageBackend):
             avatar=row["avatar"], runtime=row["runtime"], publish_scope=row["publish_scope"],
             current_version=row["current_version"], created_at=row["created_at"],
             updated_at=row["updated_at"],
+            usage_count=row["usage_count"] if row["usage_count"] is not None else 0,
+            last_used_at=row["last_used_at"],
+            source_session_id=row["source_session_id"],
+            derived_from_agent_id=row["derived_from_agent_id"],
+            notes=row["notes"] if row["notes"] is not None else "",
+            use_cases=row["use_cases"] if row["use_cases"] is not None else "",
+            caveats=row["caveats"] if row["caveats"] is not None else "",
         )
 
     @staticmethod

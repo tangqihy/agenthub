@@ -83,6 +83,13 @@ class Agent(BaseModel):
     current_version: int = 1
     created_at: int = 0
     updated_at: int = 0
+    usage_count: int = 0
+    last_used_at: int | None = None
+    source_session_id: str | None = None
+    derived_from_agent_id: str | None = None
+    notes: str = ""
+    use_cases: str = ""
+    caveats: str = ""
 
 
 class AgentVersion(BaseModel):

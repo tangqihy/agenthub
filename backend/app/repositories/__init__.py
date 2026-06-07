@@ -132,3 +132,12 @@ class AgentRepository:
 
     async def create_run(self, run: AgentRun) -> None:
         await self._storage.create_agent_run(run)
+
+    async def increment_usage(self, agent_id: str) -> None:
+        await self._storage.increment_agent_usage(agent_id)
+
+    async def catalog(self, *, sort: str = "recent", limit: int = 50) -> list[Agent]:
+        return await self._storage.list_agents_catalog(sort=sort, limit=limit)
+
+    async def get_children(self, parent_agent_id: str) -> list[Agent]:
+        return await self._storage.get_child_agents(parent_agent_id)
