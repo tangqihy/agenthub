@@ -1,61 +1,71 @@
 .token-card {
   flex: 1;
   position: relative;
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: 14px 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-lg);
+  padding: 16px 12px;
   text-align: center;
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--glass-border);
   overflow: hidden;
   animation: scaleIn var(--transition-slow) ease-out;
   transition: transform var(--transition-fast), box-shadow var(--transition-normal);
 
   &:active {
     transform: scale(0.97);
+    box-shadow: var(--shadow-md);
   }
 
   &--primary {
-    border: 1px solid rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.15);
 
     .token-card__value {
-      background: linear-gradient(135deg, #6366f1, #818cf8);
+      background: linear-gradient(135deg, #6366f1, #818cf8, #a78bfa);
+      background-size: 200% 200%;
+      animation: gradientShift 4s ease-in-out infinite;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .token-card__glow {
-      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
     }
   }
 
   &--success {
-    border: 1px solid rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.15);
 
     .token-card__value {
-      background: linear-gradient(135deg, #10b981, #34d399);
+      background: linear-gradient(135deg, #10b981, #34d399, #6ee7b7);
+      background-size: 200% 200%;
+      animation: gradientShift 4s ease-in-out infinite;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .token-card__glow {
-      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
     }
   }
 
   &--warning {
-    border: 1px solid rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.15);
 
     .token-card__value {
-      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      background: linear-gradient(135deg, #f59e0b, #fbbf24, #fcd34d);
+      background-size: 200% 200%;
+      animation: gradientShift 4s ease-in-out infinite;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .token-card__glow {
-      background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+      background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
     }
   }
 }
@@ -76,14 +86,14 @@
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 6px;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
 }
 
 .token-card__value {
   position: relative;
   display: block;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
@@ -94,6 +104,6 @@
   display: block;
   font-size: 11px;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 6px;
   font-weight: 500;
 }

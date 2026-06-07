@@ -6,18 +6,18 @@
 
 .dashboard-header__title {
   display: block;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 
 .dashboard-header__subtitle {
   display: block;
   font-size: 14px;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 6px;
   font-weight: 500;
 }
 
@@ -41,6 +41,11 @@
   font-size: 13px;
   color: var(--color-primary);
   font-weight: 600;
+  transition: opacity var(--transition-fast);
+
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 /* Source Bars */
@@ -76,19 +81,20 @@
 }
 
 .source-bar__track {
-  height: 6px;
-  background: #f1f5f9;
-  border-radius: 3px;
+  height: 7px;
+  background: rgba(241, 245, 249, 0.8);
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
 .source-bar__fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
-  border-radius: 3px;
-  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: shimmer 2s infinite;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light), #a78bfa);
   background-size: 200% 100%;
+  border-radius: var(--radius-full);
+  transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: shimmer 3s infinite ease-in-out;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
 }
 
 /* Top Sessions */
@@ -97,7 +103,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   animation: slideInRight var(--transition-slow) ease-out;
   animation-fill-mode: both;
 
@@ -150,13 +156,13 @@
   border-radius: 50%;
 
   &--active {
-    background: #10b981;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    background: var(--color-success);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
     animation: dotPulse 2s ease-in-out infinite;
   }
 
   &--paused {
-    background: #94a3b8;
+    background: var(--text-muted);
   }
 }
 
@@ -167,10 +173,11 @@
 }
 
 .cron-summary__value {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 /* Empty State */
@@ -185,6 +192,7 @@
 .empty-state__icon {
   font-size: 36px;
   margin-bottom: 8px;
+  animation: float 3s ease-in-out infinite;
 }
 
 .empty-state__text {
