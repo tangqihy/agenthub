@@ -5,6 +5,9 @@ export default defineAppConfig({
     'pages/sessions/detail',
     'pages/cron/index',
     'pages/analytics/index',
+    'pages/agents/index',
+    'pages/agents/detail',
+    'pages/agents/editor',
   ],
   window: {
     backgroundTextStyle: 'light',

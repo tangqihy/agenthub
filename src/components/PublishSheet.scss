@@ -1,0 +1,122 @@
+.publish-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn var(--transition-fast) ease-out;
+}
+
+.publish-sheet__content {
+  width: 100%;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 20px 16px 32px;
+  animation: fadeInUp var(--transition-normal) ease-out;
+}
+
+.publish-sheet__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.publish-sheet__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.publish-sheet__close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.publish-sheet__close-text {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.publish-sheet__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.publish-sheet__option {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: #f8fafc;
+  border: 2px solid transparent;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+
+  &--active {
+    border-color: var(--color-primary);
+    background: #f5f3ff;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &--private.publish-sheet__option--active {
+    border-color: #94a3b8;
+    background: #f8fafc;
+  }
+
+  &--family.publish-sheet__option--active {
+    border-color: #3b82f6;
+    background: #eff6ff;
+  }
+
+  &--public.publish-sheet__option--active {
+    border-color: #10b981;
+    background: #ecfdf5;
+  }
+}
+
+.publish-sheet__option-icon {
+  font-size: 24px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.publish-sheet__option-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.publish-sheet__option-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.publish-sheet__option-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: block;
+}
+
+.publish-sheet__check {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+  flex-shrink: 0;
+  margin-left: 8px;
+}

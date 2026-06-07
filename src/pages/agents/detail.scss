@@ -1,0 +1,296 @@
+// Agent Detail Page Styles
+.agent-detail__header {
+  display: flex;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeInUp var(--transition-slow) ease-out;
+}
+
+.agent-detail__avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 14px;
+}
+
+.agent-detail__avatar-text {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.agent-detail__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-detail__name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.agent-detail__name {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agent-detail__scope {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &--private {
+    background: #f1f5f9;
+    color: var(--text-muted);
+  }
+
+  &--family {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+  }
+
+  &--public {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+  }
+}
+
+.agent-detail__desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+  display: block;
+}
+
+.agent-detail__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agent-detail__tag {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+
+  & > text {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+}
+
+.agent-detail__version {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+// Action Bar
+.agent-detail__actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  animation: fadeInUp var(--transition-slow) ease-out;
+  animation-delay: 100ms;
+  animation-fill-mode: both;
+}
+
+.agent-detail__action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &--primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+
+    .agent-detail__action-label {
+      color: #ffffff;
+    }
+  }
+}
+
+.agent-detail__action-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.agent-detail__action-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+// Current Version Card
+.agent-detail__current-version {
+  background: linear-gradient(135deg, #f5f3ff, #eef2ff);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.agent-detail__cv-ver {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.agent-detail__cv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agent-detail__cv-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.agent-detail__cv-label {
+  color: var(--text-muted);
+  font-weight: 500;
+  flex-shrink: 0;
+  min-width: 42px;
+}
+
+.agent-detail__cv-value {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Empty state
+.agent-detail__empty {
+  padding: 16px;
+  text-align: center;
+}
+
+.agent-detail__empty-text {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+// Run items
+.agent-run {
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f5f9;
+  animation: fadeIn var(--transition-normal) ease-out;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.agent-run__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.agent-run__status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  &--running {
+    .agent-run__dot {
+      background: var(--color-success);
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    .agent-run__status-text {
+      color: #059669;
+    }
+  }
+
+  &--completed {
+    .agent-run__dot {
+      background: var(--text-muted);
+    }
+    .agent-run__status-text {
+      color: var(--text-muted);
+    }
+  }
+
+  &--failed {
+    .agent-run__dot {
+      background: var(--color-danger);
+    }
+    .agent-run__status-text {
+      color: var(--color-danger);
+    }
+  }
+}
+
+.agent-run__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.agent-run__status-text {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.agent-run__runtime {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: #f1f5f9;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.agent-run__meta {
+  display: flex;
+  gap: 12px;
+}
+
+.agent-run__time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.agent-run__duration {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}

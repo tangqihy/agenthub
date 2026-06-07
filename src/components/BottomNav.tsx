@@ -5,6 +5,7 @@ import './BottomNav.scss'
 const TABS = [
   { path: '/pages/dashboard/index', label: '首页', icon: '📊' },
   { path: '/pages/sessions/index', label: 'Sessions', icon: '💬' },
+  { path: '/pages/agents/index', label: 'Agents', icon: '🤖' },
   { path: '/pages/cron/index', label: 'Cron', icon: '⏰' },
   { path: '/pages/analytics/index', label: '统计', icon: '📈' },
 ]
