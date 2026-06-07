@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import APIRouter, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.deps import init_app_state, shutdown_app_state
 from app.routers import agents, analytics, cron, dashboard, sessions
+from app.security import verify_token
 
 
 def _ensure_fixtures() -> None:
@@ -48,6 +49,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- Health endpoint (no auth) ---
+health_router = APIRouter(tags=["health"])
+
+
+@health_router.get("/api/v1/health", include_in_schema=False)
+async def health():
+    return {"status": "ok"}
+
+
+# --- Auth endpoints (no auth required for these) ---
+auth_router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+
+
+@auth_router.get("/verify")
+async def auth_verify(token: str = Depends(verify_token)):
+    return {"status": "ok"}
+
+
+@auth_router.get("/config")
+async def auth_config():
+    return {"auth_required": bool(settings.api_bearer_token)}
+
+
+app.include_router(health_router)
+app.include_router(auth_router)
 app.include_router(dashboard.router)
 app.include_router(sessions.router)
 app.include_router(cron.router)

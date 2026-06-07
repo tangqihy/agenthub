@@ -3,8 +3,11 @@ from fastapi import APIRouter, Depends
 from app.cron.queue import CronAction, CronCommand
 from app.deps import get_state
 from app.models.domain import CronJob
+from app.security import require_auth
 
-router = APIRouter(prefix="/api/v1/cron", tags=["cron"])
+router = APIRouter(
+    prefix="/api/v1/cron", tags=["cron"], dependencies=[Depends(require_auth)]
+)
 
 
 @router.get("", response_model=list[CronJob])

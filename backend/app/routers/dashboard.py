@@ -2,13 +2,11 @@ from fastapi import APIRouter, Depends
 
 from app.deps import get_state
 from app.models.domain import DashboardData
+from app.security import require_auth
 
-router = APIRouter(prefix="/api/v1", tags=["dashboard"])
-
-
-@router.get("/health")
-async def health():
-    return {"status": "ok"}
+router = APIRouter(
+    prefix="/api/v1", tags=["dashboard"], dependencies=[Depends(require_auth)]
+)
 
 
 @router.get("/dashboard", response_model=DashboardData)

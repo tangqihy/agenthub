@@ -6,8 +6,13 @@ from pydantic import BaseModel
 
 from app.deps import get_state
 from app.models.domain import Agent, AgentRun, AgentVersion, Session
+from app.security import require_auth
 
-router = APIRouter(prefix="/api/v2/agents", tags=["agents-v2"])
+router = APIRouter(
+    prefix="/api/v2/agents",
+    tags=["agents-v2"],
+    dependencies=[Depends(require_auth)],
+)
 
 
 # --- Request/Response Models ---

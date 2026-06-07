@@ -2,8 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.deps import get_state
 from app.models.domain import Event, Session
+from app.security import require_auth
 
-router = APIRouter(prefix="/api/v1/sessions", tags=["sessions"])
+router = APIRouter(
+    prefix="/api/v1/sessions",
+    tags=["sessions"],
+    dependencies=[Depends(require_auth)],
+)
 
 
 @router.get("", response_model=list[Session])

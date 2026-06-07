@@ -15,15 +15,35 @@ import type {
 
 const BASE = process.env.TARO_ENV === 'h5' ? '' : 'http://127.0.0.1:8000'
 
+// Auth token management (module-level, no circular dependency with auth.ts)
+let _token = ''
+try { _token = Taro.getStorageSync('agenthub_token') || '' } catch {}
+
+export function setAuthToken(token: string) {
+  _token = token
+}
+
+export function getAuthToken(): string {
+  return _token
+}
+
 async function request<T>(url: string, options: Taro.request.Option = {}): Promise<T> {
+  const authHeader = _token ? { Authorization: `Bearer ${_token}` } : {}
   const res = await Taro.request({
     url: `${BASE}${url}`,
     ...options,
     header: {
       'Content-Type': 'application/json',
+      ...authHeader,
       ...(options.header || {}),
     },
   })
+  if (res.statusCode === 401) {
+    _token = ''
+    try { Taro.removeStorageSync('agenthub_token') } catch {}
+    Taro.reLaunch({ url: '/pages/login/index' })
+    throw new Error(`Unauthorized: ${url}`)
+  }
   if (res.statusCode >= 400) {
     throw new Error(`API ${res.statusCode}: ${url}`)
   }
@@ -102,4 +122,8 @@ export const api = {
 
   agentTree: (id: string) =>
     request<{ agent: Agent; parent: Agent | null; children: Agent[] }>(`/api/v2/agents/${id}/tree`),
+
+  // Auth
+  authVerify: () => request<{ status: string }>('/api/v1/auth/verify'),
+  authConfig: () => request<{ auth_required: boolean }>('/api/v1/auth/config'),
 }

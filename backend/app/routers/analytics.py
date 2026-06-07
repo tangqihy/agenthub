@@ -2,8 +2,11 @@ from fastapi import APIRouter, Depends, Query
 
 from app.deps import get_state
 from app.models.domain import Gateway, TopSession, UsageDaily, UsageSummary
+from app.security import require_auth
 
-router = APIRouter(prefix="/api/v1", tags=["analytics"])
+router = APIRouter(
+    prefix="/api/v1", tags=["analytics"], dependencies=[Depends(require_auth)]
+)
 
 
 @router.get("/analytics/summary", response_model=UsageSummary)

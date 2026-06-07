@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import { useEffect } from 'react'
 import { usePolling } from '../../hooks/usePolling'
 import { api } from '../../services/api'
 import { formatTokens } from '../../services/types'
@@ -10,9 +11,19 @@ import BottomNav from '../../components/BottomNav'
 import Taro from '@tarojs/taro'
 import '../../app.scss'
 import './index.scss'
-
 export default function DashboardPage() {
+  // Auth check on mount
+  useEffect(() => {
+    api.authConfig().then((config) => {
+      if (config.auth_required) {
+        api.authVerify().catch(() => {
+          Taro.reLaunch({ url: '/pages/login/index' })
+        })
+      }
+    }).catch(() => {})
+  }, [])
   const { data, loading, error } = usePolling(() => api.dashboard(), 5000)
+  const { data: agentsData } = usePolling(() => api.agents(), 10000)
   const { data: agentsData } = usePolling(() => api.agents(), 10000)
   const agents = agentsData?.slice(0, 5)
 
