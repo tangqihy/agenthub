@@ -4,6 +4,7 @@ import { api } from '../../services/api'
 import { formatTokens } from '../../services/types'
 import TokenCard from '../../components/TokenCard'
 import SessionCard from '../../components/SessionCard'
+import AgentCard from '../../components/AgentCard'
 import GatewayBadge from '../../components/GatewayBadge'
 import BottomNav from '../../components/BottomNav'
 import Taro from '@tarojs/taro'
@@ -12,6 +13,8 @@ import './index.scss'
 
 export default function DashboardPage() {
   const { data, loading, error } = usePolling(() => api.dashboard(), 5000)
+  const { data: agentsData } = usePolling(() => api.agents(), 10000)
+  const agents = agentsData?.slice(0, 5)
 
   if (loading && !data) {
     return (
@@ -107,6 +110,30 @@ export default function DashboardPage() {
           <View className='empty-state'>
             <Text className='empty-state__icon'>💤</Text>
             <Text className='empty-state__text'>暂无活跃 Session</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Recent Agents */}
+      <View className='section'>
+        <View className='section__header'>
+          <Text className='section__title'>最近 Agent</Text>
+          <Text className='section__more' onClick={() => Taro.reLaunch({ url: '/pages/agents/index' })}>
+            查看全部 →
+          </Text>
+        </View>
+        {agents && agents.length > 0 ? (
+          agents.map((a) => (
+            <AgentCard
+              key={a.id}
+              agent={a}
+              onClick={() => Taro.navigateTo({ url: `/pages/agents/detail?id=${a.id}` })}
+            />
+          ))
+        ) : (
+          <View className='empty-state'>
+            <Text className='empty-state__icon'>🤖</Text>
+            <Text className='empty-state__text'>暂无 Agent</Text>
           </View>
         )}
       </View>
