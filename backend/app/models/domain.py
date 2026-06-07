@@ -71,6 +71,37 @@ class TopSession(BaseModel):
     tokens: int
 
 
+
+
+class Agent(BaseModel):
+    id: str
+    name: str
+    description: str = ""
+    avatar: str = "🤖"
+    runtime: str = "hermes"
+    publish_scope: str = "private"
+    current_version: int = 1
+    created_at: int = 0
+    updated_at: int = 0
+
+
+class AgentVersion(BaseModel):
+    id: str
+    agent_id: str
+    version: int
+    config_json: dict = Field(default_factory=dict)
+    created_at: int = 0
+
+
+class AgentRun(BaseModel):
+    id: str
+    agent_id: str
+    runtime: str
+    runtime_session_id: str | None = None
+    status: str = "completed"
+    started_at: int = 0
+    ended_at: int | None = None
+
 class DashboardData(BaseModel):
     usage: UsageSummary
     by_source: list[dict]

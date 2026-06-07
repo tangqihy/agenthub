@@ -61,6 +61,41 @@ CREATE TABLE IF NOT EXISTS usage_daily (
 
 CREATE INDEX IF NOT EXISTS idx_usage_daily_date ON usage_daily(date DESC);
 
+CREATE TABLE IF NOT EXISTS agents (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    avatar TEXT NOT NULL DEFAULT '🤖',
+    runtime TEXT NOT NULL DEFAULT 'hermes',
+    publish_scope TEXT NOT NULL DEFAULT 'private',
+    current_version INTEGER NOT NULL DEFAULT 1,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS agent_versions (
+    id TEXT PRIMARY KEY,
+    agent_id TEXT NOT NULL,
+    version INTEGER NOT NULL,
+    config_json TEXT NOT NULL DEFAULT '{}',
+    created_at INTEGER NOT NULL,
+    UNIQUE(agent_id, version)
+);
+
+CREATE INDEX IF NOT EXISTS idx_agent_versions_agent ON agent_versions(agent_id, version DESC);
+
+CREATE TABLE IF NOT EXISTS agent_runs (
+    id TEXT PRIMARY KEY,
+    agent_id TEXT NOT NULL,
+    runtime TEXT NOT NULL,
+    runtime_session_id TEXT,
+    status TEXT NOT NULL DEFAULT 'completed',
+    started_at INTEGER NOT NULL,
+    ended_at INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_agent_runs_agent ON agent_runs(agent_id, started_at DESC);
+
 CREATE TABLE IF NOT EXISTS sync_state (
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL,

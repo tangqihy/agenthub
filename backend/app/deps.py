@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from app.config import settings
 from app.cron.queue import CronCommandQueue, CronController
 from app.repositories import (
+    AgentRepository,
     CronRepository,
     EventRepository,
     GatewayRepository,
@@ -21,6 +22,7 @@ class AppState:
     cron: CronRepository
     usage: UsageRepository
     gateways: GatewayRepository
+    agents: AgentRepository
     sync_worker: SyncWorker
     cron_queue: CronCommandQueue
     cron_controller: CronController
@@ -45,6 +47,7 @@ async def init_app_state() -> AppState:
         cron=CronRepository(storage),
         usage=UsageRepository(storage),
         gateways=GatewayRepository(storage),
+        agents=AgentRepository(storage),
         sync_worker=sync_worker,
         cron_queue=cron_queue,
         cron_controller=cron_controller,

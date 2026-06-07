@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.models.domain import CronJob, Event, Session, UsageDaily
+from app.models.domain import Agent, AgentRun, AgentVersion, CronJob, Event, Session, UsageDaily
 from app.storage.base import StorageBackend
 
 
@@ -97,3 +97,38 @@ class SyncStateRepository:
 
     async def set(self, key: str, value: str) -> None:
         await self._storage.set_sync_state(key, value)
+
+
+class AgentRepository:
+    def __init__(self, storage: StorageBackend) -> None:
+        self._storage = storage
+
+    async def list_all(self, *, runtime: str | None = None, scope: str | None = None, q: str | None = None) -> list[Agent]:
+        return await self._storage.list_agents(runtime=runtime, scope=scope, q=q)
+
+    async def get(self, agent_id: str) -> Agent | None:
+        return await self._storage.get_agent(agent_id)
+
+    async def create(self, agent: Agent) -> None:
+        await self._storage.create_agent(agent)
+
+    async def update(self, agent: Agent) -> None:
+        await self._storage.update_agent(agent)
+
+    async def delete(self, agent_id: str) -> None:
+        await self._storage.delete_agent(agent_id)
+
+    async def list_versions(self, agent_id: str) -> list[AgentVersion]:
+        return await self._storage.list_agent_versions(agent_id)
+
+    async def get_version(self, agent_id: str, version: int) -> AgentVersion | None:
+        return await self._storage.get_agent_version(agent_id, version)
+
+    async def create_version(self, v: AgentVersion) -> None:
+        await self._storage.create_agent_version(v)
+
+    async def list_runs(self, agent_id: str, limit: int = 20) -> list[AgentRun]:
+        return await self._storage.list_agent_runs(agent_id, limit)
+
+    async def create_run(self, run: AgentRun) -> None:
+        await self._storage.create_agent_run(run)

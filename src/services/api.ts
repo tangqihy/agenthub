@@ -1,5 +1,8 @@
 import Taro from '@tarojs/taro'
 import type {
+  Agent,
+  AgentRun,
+  AgentVersion,
   CronJob,
   DashboardData,
   Event,
@@ -55,4 +58,38 @@ export const api = {
   analyticsByModel: () => request<Array<{ model: string; tokens: number; cost: number }>>('/api/v1/analytics/by-model'),
   topSessions: (limit = 10) => request<TopSession[]>(`/api/v1/analytics/top-sessions?limit=${limit}`),
   gateways: () => request<Gateway[]>('/api/v1/gateways'),
+
+  // Agent CRUD
+  agents: (params?: { runtime?: string; scope?: string; q?: string }) => {
+    const q = new URLSearchParams()
+    if (params?.runtime) q.set('runtime', params.runtime)
+    if (params?.scope) q.set('scope', params.scope)
+    if (params?.q) q.set('q', params.q)
+    const qs = q.toString()
+    return request<Agent[]>(`/api/v2/agents${qs ? `?${qs}` : ''}`)
+  },
+  agent: (id: string) => request<Agent>(`/api/v2/agents/${id}`),
+  agentCreate: (data: { name: string; description?: string; avatar?: string; runtime?: string; config?: Record<string, unknown> }) =>
+    request<Agent>('/api/v2/agents', { method: 'POST', data }),
+  agentUpdate: (id: string, data: { name?: string; description?: string; avatar?: string; publish_scope?: string }) =>
+    request<Agent>(`/api/v2/agents/${id}`, { method: 'PATCH', data }),
+  agentDelete: (id: string) => request<void>(`/api/v2/agents/${id}`, { method: 'DELETE' }),
+
+  // Agent Versions
+  agentVersions: (agentId: string) => request<AgentVersion[]>(`/api/v2/agents/${agentId}/versions`),
+  agentVersionCreate: (agentId: string, config_json: Record<string, unknown>) =>
+    request<AgentVersion>(`/api/v2/agents/${agentId}/versions`, { method: 'POST', data: { config_json } }),
+  agentVersionRollback: (agentId: string, v: number) =>
+    request<Agent>(`/api/v2/agents/${agentId}/versions/${v}/rollback`, { method: 'POST' }),
+  agentClone: (id: string) => request<Agent>(`/api/v2/agents/${id}/clone`, { method: 'POST' }),
+
+  // Agent Runs
+  agentRuns: (agentId: string, limit?: number) =>
+    request<AgentRun[]>(`/api/v2/agents/${agentId}/runs${limit ? `?limit=${limit}` : ''}`),
+  agentRunCreate: (agentId: string, data: { runtime: string; runtime_session_id?: string; status?: string }) =>
+    request<AgentRun>(`/api/v2/agents/${agentId}/runs`, { method: 'POST', data }),
+
+  // Agent Sessions
+  agentSessions: (agentId: string, limit?: number) =>
+    request<Session[]>(`/api/v2/agents/${agentId}/sessions${limit ? `?limit=${limit}` : ''}`),
 }

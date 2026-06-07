@@ -6,6 +6,9 @@ from pathlib import Path
 import aiosqlite
 
 from app.models.domain import (
+    Agent,
+    AgentRun,
+    AgentVersion,
     CronJob,
     Event,
     Gateway,
@@ -497,3 +500,135 @@ class SQLiteBackend(StorageBackend):
                 (key, value, now),
             )
             await db.commit()
+
+
+    # --- V2: Agent Registry ---
+
+    async def list_agents(
+        self, *, runtime: str | None = None, scope: str | None = None, q: str | None = None
+    ) -> list[Agent]:
+        clauses: list[str] = []
+        params: list[object] = []
+        if runtime:
+            clauses.append("runtime = ?")
+            params.append(runtime)
+        if scope:
+            clauses.append("publish_scope = ?")
+            params.append(scope)
+        if q:
+            clauses.append("name LIKE ?")
+            params.append(f"%{q}%")
+        where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+        query = f"SELECT * FROM agents {where} ORDER BY updated_at DESC"
+        async with aiosqlite.connect(self.database_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(query, params) as cursor:
+                rows = await cursor.fetchall()
+        return [self._agent_from_row(row) for row in rows]
+
+    async def get_agent(self, agent_id: str) -> Agent | None:
+        async with aiosqlite.connect(self.database_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM agents WHERE id = ?", (agent_id,)) as cursor:
+                row = await cursor.fetchone()
+        return self._agent_from_row(row) if row else None
+
+    async def create_agent(self, agent: Agent) -> None:
+        async with aiosqlite.connect(self.database_path) as db:
+            await db.execute(
+                """INSERT INTO agents (id, name, description, avatar, runtime, publish_scope,
+                   current_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (agent.id, agent.name, agent.description, agent.avatar, agent.runtime,
+                 agent.publish_scope, agent.current_version, agent.created_at, agent.updated_at),
+            )
+            await db.commit()
+
+    async def update_agent(self, agent: Agent) -> None:
+        async with aiosqlite.connect(self.database_path) as db:
+            await db.execute(
+                """UPDATE agents SET name=?, description=?, avatar=?, runtime=?,
+                   publish_scope=?, current_version=?, updated_at=? WHERE id=?""",
+                (agent.name, agent.description, agent.avatar, agent.runtime,
+                 agent.publish_scope, agent.current_version, agent.updated_at, agent.id),
+            )
+            await db.commit()
+
+    async def delete_agent(self, agent_id: str) -> None:
+        async with aiosqlite.connect(self.database_path) as db:
+            await db.execute("DELETE FROM agent_runs WHERE agent_id = ?", (agent_id,))
+            await db.execute("DELETE FROM agent_versions WHERE agent_id = ?", (agent_id,))
+            await db.execute("DELETE FROM agents WHERE id = ?", (agent_id,))
+            await db.commit()
+
+    async def list_agent_versions(self, agent_id: str) -> list[AgentVersion]:
+        async with aiosqlite.connect(self.database_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                "SELECT * FROM agent_versions WHERE agent_id = ? ORDER BY version DESC",
+                (agent_id,),
+            ) as cursor:
+                rows = await cursor.fetchall()
+        return [self._version_from_row(row) for row in rows]
+
+    async def get_agent_version(self, agent_id: str, version: int) -> AgentVersion | None:
+        async with aiosqlite.connect(self.database_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                "SELECT * FROM agent_versions WHERE agent_id = ? AND version = ?",
+                (agent_id, version),
+            ) as cursor:
+                row = await cursor.fetchone()
+        return self._version_from_row(row) if row else None
+
+    async def create_agent_version(self, v: AgentVersion) -> None:
+        async with aiosqlite.connect(self.database_path) as db:
+            await db.execute(
+                """INSERT INTO agent_versions (id, agent_id, version, config_json, created_at)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (v.id, v.agent_id, v.version, json.dumps(v.config_json, ensure_ascii=False), v.created_at),
+            )
+            await db.commit()
+
+    async def list_agent_runs(self, agent_id: str, limit: int = 20) -> list[AgentRun]:
+        async with aiosqlite.connect(self.database_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                "SELECT * FROM agent_runs WHERE agent_id = ? ORDER BY started_at DESC LIMIT ?",
+                (agent_id, limit),
+            ) as cursor:
+                rows = await cursor.fetchall()
+        return [self._run_from_row(row) for row in rows]
+
+    async def create_agent_run(self, run: AgentRun) -> None:
+        async with aiosqlite.connect(self.database_path) as db:
+            await db.execute(
+                """INSERT INTO agent_runs (id, agent_id, runtime, runtime_session_id,
+                   status, started_at, ended_at) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (run.id, run.agent_id, run.runtime, run.runtime_session_id,
+                 run.status, run.started_at, run.ended_at),
+            )
+            await db.commit()
+
+    @staticmethod
+    def _agent_from_row(row: aiosqlite.Row) -> Agent:
+        return Agent(
+            id=row["id"], name=row["name"], description=row["description"],
+            avatar=row["avatar"], runtime=row["runtime"], publish_scope=row["publish_scope"],
+            current_version=row["current_version"], created_at=row["created_at"],
+            updated_at=row["updated_at"],
+        )
+
+    @staticmethod
+    def _version_from_row(row: aiosqlite.Row) -> AgentVersion:
+        return AgentVersion(
+            id=row["id"], agent_id=row["agent_id"], version=row["version"],
+            config_json=_loads(row["config_json"]), created_at=row["created_at"],
+        )
+
+    @staticmethod
+    def _run_from_row(row: aiosqlite.Row) -> AgentRun:
+        return AgentRun(
+            id=row["id"], agent_id=row["agent_id"], runtime=row["runtime"],
+            runtime_session_id=row["runtime_session_id"], status=row["status"],
+            started_at=row["started_at"], ended_at=row["ended_at"],
+        )

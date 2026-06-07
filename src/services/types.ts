@@ -90,3 +90,39 @@ export function formatTokens(n: number): string {
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
   return String(n)
 }
+
+export interface Agent {
+  id: string
+  name: string
+  description: string
+  avatar: string
+  runtime: string  // 'hermes' | 'claude-code' | 'codex' | 'opencode' | 'custom'
+  publish_scope: string  // 'private' | 'family' | 'public'
+  current_version: number
+  created_at: number
+  updated_at: number
+}
+
+export interface AgentVersion {
+  id: string
+  agent_id: string
+  version: number
+  config_json: {
+    model?: string
+    prompt?: string
+    skills?: string[]
+    mcp?: string[]
+    runtime_config?: Record<string, unknown>
+  }
+  created_at: number
+}
+
+export interface AgentRun {
+  id: string
+  agent_id: string
+  runtime: string
+  runtime_session_id?: string | null
+  status: string  // 'running' | 'completed' | 'failed'
+  started_at: number
+  ended_at?: number | null
+}

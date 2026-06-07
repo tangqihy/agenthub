@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.deps import init_app_state, shutdown_app_state
-from app.routers import analytics, cron, dashboard, sessions
+from app.routers import agents, analytics, cron, dashboard, sessions
 
 
 def _ensure_fixtures() -> None:
@@ -52,3 +52,4 @@ app.include_router(dashboard.router)
 app.include_router(sessions.router)
 app.include_router(cron.router)
 app.include_router(analytics.router)
+app.include_router(agents.router)
