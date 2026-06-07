@@ -22,6 +22,9 @@ class AgentCreate(BaseModel):
     description: str = ""
     avatar: str = "🤖"
     runtime: str = "hermes"
+    notes: str = ""
+    use_cases: str = ""
+    caveats: str = ""
     config: dict | None = None  # 初始版本 config，不传则用默认
 
 
@@ -29,7 +32,11 @@ class AgentUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
     avatar: str | None = None
+    runtime: str | None = None
     publish_scope: str | None = None
+    notes: str | None = None
+    use_cases: str | None = None
+    caveats: str | None = None
 
 
 class VersionCreate(BaseModel):
@@ -71,6 +78,9 @@ async def create_agent(body: AgentCreate, state=Depends(get_state)):
         current_version=1,
         created_at=now,
         updated_at=now,
+        notes=body.notes,
+        use_cases=body.use_cases,
+        caveats=body.caveats,
     )
     await state.agents.create(agent)
 
@@ -106,10 +116,18 @@ async def update_agent(agent_id: str, body: AgentUpdate, state=Depends(get_state
         agent.description = body.description
     if body.avatar is not None:
         agent.avatar = body.avatar
+    if body.runtime is not None:
+        agent.runtime = body.runtime
     if body.publish_scope is not None:
         if body.publish_scope not in ("private", "family", "public"):
             raise HTTPException(400, "publish_scope must be private/family/public")
         agent.publish_scope = body.publish_scope
+    if body.notes is not None:
+        agent.notes = body.notes
+    if body.use_cases is not None:
+        agent.use_cases = body.use_cases
+    if body.caveats is not None:
+        agent.caveats = body.caveats
     agent.updated_at = int(time.time())
     await state.agents.update(agent)
     return agent

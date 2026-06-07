@@ -73,6 +73,19 @@
   margin-top: 2px;
 }
 
+.chat-page__runtime-warning {
+  padding: 8px 16px;
+  background: rgba(245, 158, 11, 0.12);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.24);
+  flex-shrink: 0;
+}
+
+.chat-page__runtime-warning-text {
+  font-size: 12px;
+  color: var(--color-warning);
+  line-height: 1.4;
+}
+
 // Messages area
 .chat-page__messages {
   flex: 1;

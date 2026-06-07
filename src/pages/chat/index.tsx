@@ -11,6 +11,12 @@ interface Message {
   content: string
 }
 
+interface RuntimeStatus {
+  configured: boolean
+  provider: string
+  model: string
+}
+
 export default function ChatPage() {
   const router = useRouter()
   const agentId = router.params.agentId || ''
@@ -18,6 +24,7 @@ export default function ChatPage() {
 
   const [agent, setAgent] = useState<Agent | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
+  const [runtimeStatus, setRuntimeStatus] = useState<RuntimeStatus | null>(null)
   const [inputValue, setInputValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [historyLoading, setHistoryLoading] = useState(false)
@@ -29,6 +36,10 @@ export default function ChatPage() {
     if (!agentId) return
     api.agent(agentId).then(setAgent).catch(() => {})
   }, [agentId])
+
+  useEffect(() => {
+    api.chatRuntimeStatus().then(setRuntimeStatus).catch(() => {})
+  }, [])
 
   // Load conversation history if conversationId exists
   useEffect(() => {
@@ -58,7 +69,7 @@ export default function ChatPage() {
 
   const handleSend = useCallback(async () => {
     const text = inputValue.trim()
-    if (!text || loading) return
+    if (!text || loading || runtimeStatus?.configured === false) return
 
     // Add user message immediately
     const userMsg: Message = { role: 'user', content: text }
@@ -71,14 +82,15 @@ export default function ChatPage() {
       setConvId(res.conversation_id)
       const assistantMsg: Message = { role: 'assistant', content: res.reply }
       setMessages((prev) => [...prev, assistantMsg])
-    } catch {
-      Taro.showToast({ title: '发送失败', icon: 'error' })
+    } catch (e) {
+      const message = e instanceof Error ? e.message : '发送失败'
+      Taro.showToast({ title: message.slice(0, 20), icon: 'error' })
       // Remove the user message on error
       setMessages((prev) => prev.slice(0, -1))
     } finally {
       setLoading(false)
     }
-  }, [inputValue, loading, agentId, convId])
+  }, [inputValue, loading, agentId, convId, runtimeStatus])
 
   const handleKeyDown = useCallback(
     (e: { detail: { keyCode: number } }) => {
@@ -111,6 +123,14 @@ export default function ChatPage() {
           <Text className='chat-page__header-desc'>{agent?.description || ''}</Text>
         </View>
       </View>
+
+      {runtimeStatus && !runtimeStatus.configured && (
+        <View className='chat-page__runtime-warning'>
+          <Text className='chat-page__runtime-warning-text'>
+            Chat Runtime 未配置，请设置 LLM_BASE_URL / LLM_API_KEY / LLM_MODEL
+          </Text>
+        </View>
+      )}
 
       {/* Message List */}
       <ScrollView
@@ -179,10 +199,10 @@ export default function ChatPage() {
           placeholder='输入消息...'
           placeholderClass='chat-page__input-placeholder'
           confirmType='send'
-          disabled={loading}
+          disabled={loading || runtimeStatus?.configured === false}
         />
         <View
-          className={`chat-page__send-btn ${!inputValue.trim() || loading ? 'chat-page__send-btn--disabled' : ''}`}
+          className={`chat-page__send-btn ${!inputValue.trim() || loading || runtimeStatus?.configured === false ? 'chat-page__send-btn--disabled' : ''}`}
           onClick={handleSend}
         >
           <Text className='chat-page__send-btn-text'>↑</Text>

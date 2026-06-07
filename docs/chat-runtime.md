@@ -22,6 +22,25 @@ Required environment variables:
 
 If any required value is missing, the API returns `503` and does not persist a partial chat turn.
 
+The frontend can check runtime availability through:
+
+```text
+GET /api/v2/agents/runtime/status
+```
+
+When `configured=false`, the Chat page disables sending and shows a configuration warning.
+
+## Agent Configuration
+
+Each Agent version may provide:
+
+| Field | Description |
+|---|---|
+| `config_json.prompt` | System prompt used for the chat session |
+| `config_json.model` | Model override for this Agent |
+
+If `config_json.model` is empty, the runtime falls back to `LLM_MODEL`.
+
 ## Conversation Isolation
 
 All chat history reads must be scoped by both `agent_id` and `conversation_id`.

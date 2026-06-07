@@ -48,7 +48,9 @@ async function request<T>(url: string, options: Taro.request.Option = {}): Promi
       throw new Error(`Unauthorized: ${url}`)
     }
     if (res.statusCode >= 400) {
-      throw new Error(`API ${res.statusCode}: ${url}`)
+      const data = res.data as { detail?: string } | undefined
+      const detail = data?.detail ? `: ${data.detail}` : ''
+      throw new Error(`API ${res.statusCode}${detail}`)
     }
     return res.data as T
   } finally {
@@ -95,9 +97,30 @@ export const api = {
     return request<Agent[]>(`/api/v2/agents${qs ? `?${qs}` : ''}`)
   },
   agent: (id: string) => request<Agent>(`/api/v2/agents/${id}`),
-  agentCreate: (data: { name: string; description?: string; avatar?: string; runtime?: string; config?: Record<string, unknown> }) =>
+  agentCreate: (data: {
+    name: string
+    description?: string
+    avatar?: string
+    runtime?: string
+    notes?: string
+    use_cases?: string
+    caveats?: string
+    config?: Record<string, unknown>
+  }) =>
     request<Agent>('/api/v2/agents', { method: 'POST', data }),
-  agentUpdate: (id: string, data: { name?: string; description?: string; avatar?: string; publish_scope?: string }) =>
+  agentUpdate: (
+    id: string,
+    data: {
+      name?: string
+      description?: string
+      avatar?: string
+      runtime?: string
+      publish_scope?: string
+      notes?: string
+      use_cases?: string
+      caveats?: string
+    },
+  ) =>
     request<Agent>(`/api/v2/agents/${id}`, { method: 'PATCH', data }),
   agentDelete: (id: string) => request<void>(`/api/v2/agents/${id}`, { method: 'DELETE' }),
 
@@ -130,6 +153,8 @@ export const api = {
     request<{ agent: Agent; parent: Agent | null; children: Agent[] }>(`/api/v2/agents/${id}/tree`),
 
   // Chat
+  chatRuntimeStatus: () =>
+    request<{ configured: boolean; provider: string; model: string }>('/api/v2/agents/runtime/status'),
   agentChat: (agentId: string, message: string, conversationId?: string) =>
     request<{ reply: string; conversation_id: string; user_message_id: string; assistant_message_id: string }>(
       `/api/v2/agents/${agentId}/chat`,

@@ -33,11 +33,26 @@ class ChatResponse(BaseModel):
     assistant_message_id: str
 
 
+class RuntimeStatus(BaseModel):
+    configured: bool
+    provider: str
+    model: str
+
+
 def _build_system_prompt(agent) -> str:
     parts = [f"You are {agent.name}."]
     if agent.description:
         parts.append(agent.description)
     return "\n".join(parts)
+
+
+@router.get("/runtime/status", response_model=RuntimeStatus)
+async def runtime_status():
+    return RuntimeStatus(
+        configured=bool(settings.llm_base_url and settings.llm_api_key and settings.llm_model),
+        provider="openai-compatible",
+        model=settings.llm_model,
+    )
 
 
 @router.post("/{agent_id}/chat", response_model=ChatResponse)

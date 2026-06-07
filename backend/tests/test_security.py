@@ -141,3 +141,24 @@ class TestTokenRequired:
                 headers={"Authorization": "Bearer test-secret-token"},
             )
             assert resp.status_code != 401
+
+    def test_chat_runtime_status_requires_token(self):
+        with TestClient(app) as client:
+            resp = client.get("/api/v2/agents/runtime/status")
+            assert resp.status_code == 401
+
+    def test_chat_runtime_status_with_valid_token(self, monkeypatch):
+        monkeypatch.setattr(settings, "llm_base_url", "https://llm.example/v1")
+        monkeypatch.setattr(settings, "llm_api_key", "test-key")
+        monkeypatch.setattr(settings, "llm_model", "test-model")
+        with TestClient(app) as client:
+            resp = client.get(
+                "/api/v2/agents/runtime/status",
+                headers={"Authorization": "Bearer test-secret-token"},
+            )
+            assert resp.status_code == 200
+            assert resp.json() == {
+                "configured": True,
+                "provider": "openai-compatible",
+                "model": "test-model",
+            }

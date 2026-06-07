@@ -43,16 +43,23 @@ export default function AgentEditorPage() {
   useEffect(() => {
     if (!agentId) return
     setLoadingAgent(true)
-    api.agent(agentId).then((agent: Agent) => {
-      setName(agent.name)
-      setDescription(agent.description || '')
-      setAvatar(agent.avatar || '🤖')
-      setRuntime(agent.runtime || 'hermes')
-      setNotes(agent.notes || '')
-      setUseCases(agent.use_cases || '')
-      setCaveats(agent.caveats || '')
-      setLoadingAgent(false)
-    }).catch(() => setLoadingAgent(false))
+    Promise.all([api.agent(agentId), api.agentVersions(agentId)])
+      .then(([agent, versions]) => {
+        setName(agent.name)
+        setDescription(agent.description || '')
+        setAvatar(agent.avatar || '🤖')
+        setRuntime(agent.runtime || 'hermes')
+        setNotes(agent.notes || '')
+        setUseCases(agent.use_cases || '')
+        setCaveats(agent.caveats || '')
+        const current = versions.find((v) => v.version === agent.current_version) || versions[0]
+        const cfg = current?.config_json || {}
+        setModel(cfg.model || '')
+        setPrompt(cfg.prompt || '')
+        setSkills(cfg.skills || [])
+        setMcp(cfg.mcp || [])
+        setLoadingAgent(false)
+      }).catch(() => setLoadingAgent(false))
   }, [agentId])
 
   const handleAddSkill = () => {
@@ -88,14 +95,20 @@ export default function AgentEditorPage() {
     setSaving(true)
     try {
       if (isEdit) {
+        await api.agentUpdate(agentId, {
+          name: name.trim(),
+          description: description.trim(),
+          avatar,
+          runtime,
+          notes,
+          use_cases: useCases,
+          caveats,
+        })
         const config_json: Record<string, unknown> = {}
         if (model) config_json.model = model
         if (prompt) config_json.prompt = prompt
         if (skills.length > 0) config_json.skills = skills
         if (mcp.length > 0) config_json.mcp = mcp
-        if (notes) config_json.notes = notes
-        if (useCases) config_json.use_cases = useCases
-        if (caveats) config_json.caveats = caveats
         await api.agentVersionCreate(agentId, config_json)
         Taro.showToast({ title: '新版本已保存', icon: 'success' })
       } else {
@@ -104,14 +117,14 @@ export default function AgentEditorPage() {
         if (prompt) config.prompt = prompt
         if (skills.length > 0) config.skills = skills
         if (mcp.length > 0) config.mcp = mcp
-        if (notes) config.notes = notes
-        if (useCases) config.use_cases = useCases
-        if (caveats) config.caveats = caveats
         await api.agentCreate({
           name: name.trim(),
           description: description.trim() || undefined,
           avatar,
           runtime,
+          notes,
+          use_cases: useCases,
+          caveats,
           config,
         })
         Taro.showToast({ title: 'Agent 已创建', icon: 'success' })
