@@ -8,6 +8,7 @@ export default defineAppConfig({
     'pages/agents/index',
     'pages/agents/detail',
     'pages/agents/editor',
+    'pages/agents/catalog',
   ],
   window: {
     backgroundTextStyle: 'light',

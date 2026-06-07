@@ -34,6 +34,12 @@ export default function AgentEditorPage() {
   const [saving, setSaving] = useState(false)
   const [loadingAgent, setLoadingAgent] = useState(false)
 
+  // V2.1 Notes fields
+  const [notes, setNotes] = useState('')
+  const [useCases, setUseCases] = useState('')
+  const [caveats, setCaveats] = useState('')
+  const [advancedOpen, setAdvancedOpen] = useState(false)
+
   useEffect(() => {
     if (!agentId) return
     setLoadingAgent(true)
@@ -42,6 +48,9 @@ export default function AgentEditorPage() {
       setDescription(agent.description || '')
       setAvatar(agent.avatar || '🤖')
       setRuntime(agent.runtime || 'hermes')
+      setNotes(agent.notes || '')
+      setUseCases(agent.use_cases || '')
+      setCaveats(agent.caveats || '')
       setLoadingAgent(false)
     }).catch(() => setLoadingAgent(false))
   }, [agentId])
@@ -84,6 +93,9 @@ export default function AgentEditorPage() {
         if (prompt) config_json.prompt = prompt
         if (skills.length > 0) config_json.skills = skills
         if (mcp.length > 0) config_json.mcp = mcp
+        if (notes) config_json.notes = notes
+        if (useCases) config_json.use_cases = useCases
+        if (caveats) config_json.caveats = caveats
         await api.agentVersionCreate(agentId, config_json)
         Taro.showToast({ title: '新版本已保存', icon: 'success' })
       } else {
@@ -92,6 +104,9 @@ export default function AgentEditorPage() {
         if (prompt) config.prompt = prompt
         if (skills.length > 0) config.skills = skills
         if (mcp.length > 0) config.mcp = mcp
+        if (notes) config.notes = notes
+        if (useCases) config.use_cases = useCases
+        if (caveats) config.caveats = caveats
         await api.agentCreate({
           name: name.trim(),
           description: description.trim() || undefined,
@@ -261,6 +276,56 @@ export default function AgentEditorPage() {
             </View>
           </View>
         </View>
+      </View>
+
+      {/* Advanced Settings — Notes */}
+      <View className='section'>
+        <View
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: advancedOpen ? 14 : 0 }}
+          onClick={() => setAdvancedOpen(!advancedOpen)}
+        >
+          <Text className='section__title' style={{ marginBottom: 0 }}>高级设置</Text>
+          <Text style={{ fontSize: 12, color: 'var(--text-muted)' }}>{advancedOpen ? '收起 ▲' : '展开 ▼'}</Text>
+        </View>
+        {advancedOpen && (
+          <View>
+            <View className='editor-field'>
+              <Text className='editor-label'>使用说明</Text>
+              <Textarea
+                className='editor-textarea'
+                placeholder='描述如何使用此 Agent...'
+                value={notes}
+                onInput={(e) => setNotes(e.detail.value)}
+                autoHeight
+                maxlength={2000}
+              />
+            </View>
+
+            <View className='editor-field'>
+              <Text className='editor-label'>适用场景</Text>
+              <Textarea
+                className='editor-textarea'
+                placeholder='此 Agent 适用于哪些场景...'
+                value={useCases}
+                onInput={(e) => setUseCases(e.detail.value)}
+                autoHeight
+                maxlength={2000}
+              />
+            </View>
+
+            <View className='editor-field'>
+              <Text className='editor-label'>注意事项</Text>
+              <Textarea
+                className='editor-textarea'
+                placeholder='使用此 Agent 时需要注意什么...'
+                value={caveats}
+                onInput={(e) => setCaveats(e.detail.value)}
+                autoHeight
+                maxlength={2000}
+              />
+            </View>
+          </View>
+        )}
       </View>
 
       {/* Save Button */}

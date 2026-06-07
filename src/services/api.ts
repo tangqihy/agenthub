@@ -92,4 +92,14 @@ export const api = {
   // Agent Sessions
   agentSessions: (agentId: string, limit?: number) =>
     request<Session[]>(`/api/v2/agents/${agentId}/sessions${limit ? `?limit=${limit}` : ''}`),
+
+  // V2.1 Agent Evolution
+  agentFromSession: (sessionId: string) =>
+    request<Agent>(`/api/v2/agents/from-session/${sessionId}`, { method: 'POST' }),
+
+  agentCatalog: (sort: string = 'recent') =>
+    request<Agent[]>(`/api/v2/agents/catalog?sort=${sort}`),
+
+  agentTree: (id: string) =>
+    request<{ agent: Agent; parent: Agent | null; children: Agent[] }>(`/api/v2/agents/${id}/tree`),
 }

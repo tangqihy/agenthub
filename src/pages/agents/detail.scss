@@ -294,3 +294,36 @@
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
+
+// Evolution tree cards
+.agent-detail__tree-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  border: 1px solid #e2e8f0;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.agent-detail__tree-card-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}

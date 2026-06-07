@@ -32,6 +32,36 @@ export default function SessionDetailPage() {
         </Text>
       </View>
 
+      {/* Create Agent from Session */}
+      <View className='section'>
+        <View
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '8px 0',
+          }}
+          onClick={async () => {
+            try {
+              const agent = await api.agentFromSession(id)
+              Taro.navigateTo({ url: `/pages/agents/editor?id=${agent.id}` })
+            } catch {
+              Taro.showToast({ title: '创建失败', icon: 'error' })
+            }
+          }}
+        >
+          <Text style={{ fontSize: 28, lineHeight: 1 }}>🤖</Text>
+          <View>
+            <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', display: 'block' }}>
+              创建 Agent
+            </Text>
+            <Text style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginTop: 2 }}>
+              从当前会话沉淀为可复用的 Agent
+            </Text>
+          </View>
+        </View>
+      </View>
+
       <View className='section'>
         <Text className='section__title'>Timeline</Text>
         <EventTimeline events={events || []} />

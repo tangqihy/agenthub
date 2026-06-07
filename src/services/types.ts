@@ -99,6 +99,13 @@ export interface Agent {
   runtime: string  // 'hermes' | 'claude-code' | 'codex' | 'opencode' | 'custom'
   publish_scope: string  // 'private' | 'family' | 'public'
   current_version: number
+  usage_count: number
+  last_used_at?: number | null
+  source_session_id?: string | null
+  derived_from_agent_id?: string | null
+  notes: string
+  use_cases: string
+  caveats: string
   created_at: number
   updated_at: number
 }

@@ -47,6 +47,11 @@ export default function AgentDetailPage() {
     10000,
     !!agentId,
   )
+  const { data: tree } = usePolling<{ agent: Agent; parent: Agent | null; children: Agent[] }>(
+    () => api.agentTree(agentId),
+    30000,
+    !!agentId,
+  )
 
   if (!agentId) return <View className='page'>缺少 Agent ID</View>
   if (!agent) return <View className='page'>加载中...</View>
@@ -85,6 +90,8 @@ export default function AgentDetailPage() {
     }
   }
 
+  const hasNotes = agent.notes || agent.use_cases || agent.caveats
+
   return (
     <View className='page'>
       {/* Header */}
@@ -108,6 +115,140 @@ export default function AgentDetailPage() {
           </View>
         </View>
       </View>
+
+      {/* Usage Stats */}
+      <View className='section'>
+        <Text className='section__title'>使用统计</Text>
+        <View style={{ display: 'flex', gap: 24 }}>
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-primary)', display: 'block' }}>
+              {agent.usage_count}
+            </Text>
+            <Text style={{ fontSize: 11, color: 'var(--text-muted)' }}>运行次数</Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', display: 'block' }}>
+              {agent.last_used_at ? formatTime(agent.last_used_at) : '从未使用'}
+            </Text>
+            <Text style={{ fontSize: 11, color: 'var(--text-muted)' }}>最近使用</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Notes Section */}
+      {hasNotes && (
+        <View className='section'>
+          <Text className='section__title'>使用指南</Text>
+          {agent.notes && (
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: 4 }}>
+                使用说明
+              </Text>
+              <Text style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                {agent.notes}
+              </Text>
+            </View>
+          )}
+          {agent.use_cases && (
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: 4 }}>
+                适用场景
+              </Text>
+              <Text style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                {agent.use_cases}
+              </Text>
+            </View>
+          )}
+          {agent.caveats && (
+            <View>
+              <Text style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: 4 }}>
+                注意事项
+              </Text>
+              <Text style={{ fontSize: 12, color: 'var(--color-warning)', lineHeight: 1.6 }}>
+                {agent.caveats}
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Source Session Link */}
+      {agent.source_session_id && (
+        <View className='section'>
+          <View
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}
+            onClick={() => Taro.navigateTo({ url: `/pages/sessions/detail?id=${agent.source_session_id}` })}
+          >
+            <Text style={{ fontSize: 16 }}>💬</Text>
+            <View>
+              <Text style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'block' }}>
+                查看来源会话
+              </Text>
+              <Text style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginTop: 2 }}>
+                此 Agent 由会话沉淀而来
+              </Text>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Evolution Tree */}
+      {tree && (tree.parent || (tree.children && tree.children.length > 0)) && (
+        <View className='section'>
+          <Text className='section__title'>演化关系</Text>
+          {tree.parent && (
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
+                来源 Agent
+              </Text>
+              <View
+                className='agent-detail__tree-card'
+                onClick={() => Taro.navigateTo({ url: `/pages/agents/detail?id=${tree.parent!.id}` })}
+              >
+                <View className='agent-detail__tree-card-avatar'>
+                  <Text style={{ fontSize: 18 }}>{tree.parent.avatar || '🤖'}</Text>
+                </View>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'block' }}>
+                    {tree.parent.name}
+                  </Text>
+                  <Text style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                    v{tree.parent.current_version} · {tree.parent.runtime}
+                  </Text>
+                </View>
+                <Text style={{ fontSize: 12, color: 'var(--text-muted)' }}>→</Text>
+              </View>
+            </View>
+          )}
+          {tree.children && tree.children.length > 0 && (
+            <View>
+              <Text style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
+                衍生 Agent ({tree.children.length})
+              </Text>
+              {tree.children.map((child) => (
+                <View
+                  key={child.id}
+                  className='agent-detail__tree-card'
+                  onClick={() => Taro.navigateTo({ url: `/pages/agents/detail?id=${child.id}` })}
+                >
+                  <View className='agent-detail__tree-card-avatar'>
+                    <Text style={{ fontSize: 18 }}>{child.avatar || '🤖'}</Text>
+                  </View>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'block' }}>
+                      {child.name}
+                    </Text>
+                    <Text style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                      v{child.current_version} · {child.runtime}
+                    </Text>
+                  </View>
+                  <Text style={{ fontSize: 12, color: 'var(--text-muted)' }}>→</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Action Bar */}
       <View className='agent-detail__actions'>
