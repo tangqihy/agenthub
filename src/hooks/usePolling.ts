@@ -1,13 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export function usePolling<T>(fetcher: () => Promise<T>, intervalMs = 5000, enabled = true) {
+interface PollingResult<T> {
+  data: T | null
+  loading: boolean
+  error: string | null
+  refresh: () => Promise<void>
+  isRefreshing: boolean
+}
+
+export function usePolling<T>(fetcher: () => Promise<T>, intervalMs = 5000, enabled = true): PollingResult<T> {
   const [data, setData] = useState<T | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const fetcherRef = useRef(fetcher)
   fetcherRef.current = fetcher
 
   const refresh = useCallback(async () => {
+    const isFirstLoad = data === null
+    if (!isFirstLoad) setIsRefreshing(true)
     try {
       setError(null)
       const result = await fetcherRef.current()
@@ -16,10 +27,11 @@ export function usePolling<T>(fetcher: () => Promise<T>, intervalMs = 5000, enab
       setError(e instanceof Error ? e.message : '加载失败')
     } finally {
       setLoading(false)
+      setIsRefreshing(false)
     }
-  }, [])
+  }, [data])
 
-  // fetcher 变化时立即重新拉取（runtime/search 等过滤条件变化）
+  // Re-fetch immediately when fetcher changes
   useEffect(() => {
     if (!enabled) return
     setLoading(true)
@@ -28,5 +40,5 @@ export function usePolling<T>(fetcher: () => Promise<T>, intervalMs = 5000, enab
     return () => clearInterval(timer)
   }, [enabled, intervalMs, refresh, fetcher])
 
-  return { data, loading, error, refresh }
+  return { data, loading, error, refresh, isRefreshing }
 }

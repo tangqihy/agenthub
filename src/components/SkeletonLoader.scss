@@ -1,0 +1,34 @@
+.skeleton-loader {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-loader__item {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e8ecf1 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+  border-radius: var(--radius-md);
+  animation-fill-mode: both;
+}
+
+.skeleton-loader--card .skeleton-loader__item {
+  height: 80px;
+}
+
+.skeleton-loader--list .skeleton-loader__item {
+  height: 56px;
+}
+
+.skeleton-loader--text .skeleton-loader__item {
+  height: 14px;
+  width: 60%;
+  &:nth-child(2) { width: 80%; }
+  &:nth-child(3) { width: 45%; }
+}
+
+.skeleton-loader--avatar .skeleton-loader__item {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
