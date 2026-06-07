@@ -11,6 +11,7 @@ import BottomNav from '../../components/BottomNav'
 import Taro from '@tarojs/taro'
 import '../../app.scss'
 import './index.scss'
+
 export default function DashboardPage() {
   // Auth check on mount
   useEffect(() => {
@@ -22,8 +23,8 @@ export default function DashboardPage() {
       }
     }).catch(() => {})
   }, [])
+
   const { data, loading, error } = usePolling(() => api.dashboard(), 5000)
-  const { data: agentsData } = usePolling(() => api.agents(), 10000)
   const { data: agentsData } = usePolling(() => api.agents(), 10000)
   const agents = agentsData?.slice(0, 5)
 
