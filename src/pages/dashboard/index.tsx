@@ -10,11 +10,14 @@ import GatewayBadge from '../../components/GatewayBadge'
 import BottomNav from '../../components/BottomNav'
 import SkeletonLoader from '../../components/SkeletonLoader'
 import PageTransition from '../../components/PageTransition'
+import PerfPanel from '../../components/PerfPanel'
+import { usePerfMeasure } from '../../hooks/usePerfMeasure'
 import Taro from '@tarojs/taro'
 import '../../app.scss'
 import './index.scss'
 
 export default function DashboardPage() {
+  usePerfMeasure('DashboardPage')
   // Auth check on mount
   useEffect(() => {
     api.authConfig().then((config) => {
@@ -196,6 +199,7 @@ export default function DashboardPage() {
           </View>
         </View>
 
+        <PerfPanel />
         <BottomNav active='/pages/dashboard/index' />
       </View>
     </PageTransition>

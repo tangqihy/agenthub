@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { perf } from '../services/perf'
 
 interface PollingResult<T> {
   data: T | null
@@ -19,6 +20,7 @@ export function usePolling<T>(fetcher: () => Promise<T>, intervalMs = 5000, enab
   const refresh = useCallback(async () => {
     const isFirstLoad = data === null
     if (!isFirstLoad) setIsRefreshing(true)
+    const pollStart = performance.now()
     try {
       setError(null)
       const result = await fetcherRef.current()
@@ -26,6 +28,7 @@ export function usePolling<T>(fetcher: () => Promise<T>, intervalMs = 5000, enab
     } catch (e) {
       setError(e instanceof Error ? e.message : '加载失败')
     } finally {
+      perf.trackApi('polling', performance.now() - pollStart)
       setLoading(false)
       setIsRefreshing(false)
     }

@@ -1,0 +1,75 @@
+.perf-panel {
+  position: fixed;
+  top: 60px;
+  right: 8px;
+  z-index: 9999;
+  font-size: 11px;
+}
+
+.perf-panel__toggle {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.perf-panel__toggle-text {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.perf-panel__content {
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 4px;
+  min-width: 250px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.perf-panel__title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.perf-panel__section {
+  font-size: 11px;
+  font-weight: 600;
+  color: #818cf8;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.perf-panel__item {
+  font-size: 11px;
+  color: #e2e8f0;
+  margin-bottom: 2px;
+  display: block;
+  font-family: 'SF Mono', monospace;
+}
+
+.perf-panel__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.perf-panel__btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 6px 0;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.perf-panel__btn--primary {
+  background: var(--color-primary);
+}

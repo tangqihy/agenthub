@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro'
+import { perf } from './perf'
 import type {
   Agent,
   AgentRun,
@@ -28,26 +29,31 @@ export function getAuthToken(): string {
 }
 
 async function request<T>(url: string, options: Taro.request.Option = {}): Promise<T> {
+  const startTime = performance.now()
   const authHeader = _token ? { Authorization: `Bearer ${_token}` } : {}
-  const res = await Taro.request({
-    url: `${BASE}${url}`,
-    ...options,
-    header: {
-      'Content-Type': 'application/json',
-      ...authHeader,
-      ...(options.header || {}),
-    },
-  })
-  if (res.statusCode === 401) {
-    _token = ''
-    try { Taro.removeStorageSync('agenthub_token') } catch {}
-    Taro.reLaunch({ url: '/pages/login/index' })
-    throw new Error(`Unauthorized: ${url}`)
+  try {
+    const res = await Taro.request({
+      url: `${BASE}${url}`,
+      ...options,
+      header: {
+        'Content-Type': 'application/json',
+        ...authHeader,
+        ...(options.header || {}),
+      },
+    })
+    if (res.statusCode === 401) {
+      _token = ''
+      try { Taro.removeStorageSync('agenthub_token') } catch {}
+      Taro.reLaunch({ url: '/pages/login/index' })
+      throw new Error(`Unauthorized: ${url}`)
+    }
+    if (res.statusCode >= 400) {
+      throw new Error(`API ${res.statusCode}: ${url}`)
+    }
+    return res.data as T
+  } finally {
+    perf.trackApi(url, performance.now() - startTime)
   }
-  if (res.statusCode >= 400) {
-    throw new Error(`API ${res.statusCode}: ${url}`)
-  }
-  return res.data as T
 }
 
 export const api = {
