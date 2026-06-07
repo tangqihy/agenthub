@@ -1,7 +1,6 @@
 /* Dashboard Header */
 .dashboard-header {
   padding: 20px 4px 24px;
-  animation: fadeInUp var(--transition-slow) ease-out;
 }
 
 .dashboard-header__title {
@@ -56,8 +55,6 @@
 }
 
 .source-bar {
-  animation: fadeInUp var(--transition-slow) ease-out;
-  animation-fill-mode: both;
 }
 
 .source-bar__header {
@@ -89,11 +86,9 @@
 
 .source-bar__fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light), #a78bfa);
-  background-size: 200% 100%;
+  background: var(--color-primary);
   border-radius: var(--radius-full);
   transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  animation: shimmer 3s infinite ease-in-out;
   box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
 }
 
@@ -104,8 +99,6 @@
   gap: 10px;
   padding: 10px 0;
   border-bottom: 1px solid var(--border-light);
-  animation: slideInRight var(--transition-slow) ease-out;
-  animation-fill-mode: both;
 
   &:last-child {
     border-bottom: none;
@@ -186,13 +179,11 @@
   flex-direction: column;
   align-items: center;
   padding: 32px 20px;
-  animation: fadeIn var(--transition-slow) ease-out;
 }
 
 .empty-state__icon {
   font-size: 36px;
   margin-bottom: 8px;
-  animation: float 3s ease-in-out infinite;
 }
 
 .empty-state__text {

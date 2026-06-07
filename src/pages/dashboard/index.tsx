@@ -29,8 +29,8 @@ export default function DashboardPage() {
     }).catch(() => {})
   }, [])
 
-  const { data, loading, error } = usePolling(() => api.dashboard(), 5000)
-  const { data: agentsData } = usePolling(() => api.agents(), 10000)
+  const { data, loading, error } = usePolling(() => api.dashboard(), 10000)
+  const { data: agentsData } = usePolling(() => api.agents(), 30000)
   const agents = agentsData?.slice(0, 5)
 
   if (loading && !data) {

@@ -26,11 +26,8 @@
   flex-shrink: 0;
   padding: 7px 16px;
   border-radius: var(--radius-full);
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--bg-card-solid);
   border: 1px solid var(--border-light);
-  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 
   &--active {
     background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
@@ -40,10 +37,6 @@
     .catalog-tab__text {
       color: #ffffff;
     }
-  }
-
-  &:active {
-    transform: scale(0.96);
   }
 }
 
@@ -63,13 +56,11 @@
   flex-direction: column;
   align-items: center;
   padding: 48px 24px;
-  animation: fadeIn var(--transition-slow) ease-out;
 }
 
 .catalog-empty__icon {
   font-size: 48px;
   margin-bottom: 12px;
-  animation: float 3s ease-in-out infinite;
 }
 
 .catalog-empty__text {

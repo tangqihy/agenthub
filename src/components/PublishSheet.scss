@@ -5,13 +5,10 @@
   right: 0;
   bottom: 0;
   background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn var(--transition-fast) ease-out;
 }
 
 .publish-sheet__content {
@@ -19,7 +16,6 @@
   background: var(--bg-card-solid);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   padding: 24px 16px 32px;
-  animation: fadeInUp var(--transition-normal) ease-out;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.08);
 }
 
@@ -70,15 +66,11 @@
   border-radius: var(--radius-lg);
   background: rgba(248, 250, 252, 0.8);
   border: 2px solid transparent;
-  transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
 
   &--active {
     border-color: var(--color-primary);
     background: rgba(245, 243, 255, 0.8);
-  }
-
-  &:active {
-    transform: scale(0.98);
   }
 
   &--private.publish-sheet__option--active {

@@ -1,20 +1,11 @@
 .agent-card {
   display: flex;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--bg-card-solid);
   border-radius: var(--radius-lg);
   margin-bottom: 10px;
   padding: 14px;
   box-shadow: var(--shadow-sm);
-  animation: fadeInUp var(--transition-slow) ease-out;
-  transition: transform var(--transition-fast), box-shadow var(--transition-normal);
   border: 1px solid var(--border-light);
-
-  &:active {
-    transform: scale(0.98);
-    box-shadow: var(--shadow-md);
-  }
 }
 
 .agent-card__avatar {

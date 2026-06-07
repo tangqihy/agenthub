@@ -5,8 +5,6 @@
   min-height: 100vh;
   padding: 20px;
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
-  background-size: 200% 200%;
-  animation: gradientShift 8s ease-in-out infinite;
 }
 
 .login-card {
@@ -19,14 +17,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  animation: scaleIn var(--transition-slow) ease-out;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .login-icon {
   font-size: 52px;
   margin-bottom: 14px;
-  animation: float 3s ease-in-out infinite;
 }
 
 .login-title {

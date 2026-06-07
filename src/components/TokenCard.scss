@@ -1,37 +1,26 @@
 .token-card {
   flex: 1;
   position: relative;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--bg-card-solid);
   border-radius: var(--radius-lg);
   padding: 16px 12px;
   text-align: center;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--border-light);
   overflow: hidden;
-  animation: scaleIn var(--transition-slow) ease-out;
-  transition: transform var(--transition-fast), box-shadow var(--transition-normal);
-
-  &:active {
-    transform: scale(0.97);
-    box-shadow: var(--shadow-md);
-  }
 
   &--primary {
     border: 1px solid rgba(99, 102, 241, 0.15);
 
     .token-card__value {
       background: linear-gradient(135deg, #6366f1, #818cf8, #a78bfa);
-      background-size: 200% 200%;
-      animation: gradientShift 4s ease-in-out infinite;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .token-card__glow {
-      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+      background: none;
     }
   }
 
@@ -40,15 +29,13 @@
 
     .token-card__value {
       background: linear-gradient(135deg, #10b981, #34d399, #6ee7b7);
-      background-size: 200% 200%;
-      animation: gradientShift 4s ease-in-out infinite;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .token-card__glow {
-      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+      background: none;
     }
   }
 
@@ -57,15 +44,13 @@
 
     .token-card__value {
       background: linear-gradient(135deg, #f59e0b, #fbbf24, #fcd34d);
-      background-size: 200% 200%;
-      animation: gradientShift 4s ease-in-out infinite;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .token-card__glow {
-      background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
+      background: none;
     }
   }
 }

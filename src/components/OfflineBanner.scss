@@ -4,10 +4,7 @@
   justify-content: center;
   gap: 8px;
   background: linear-gradient(90deg, rgba(254, 243, 199, 0.9), rgba(253, 230, 138, 0.9));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   padding: 8px 16px;
-  animation: fadeIn var(--transition-normal) ease-out;
 }
 
 .offline-banner__pulse {

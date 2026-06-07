@@ -1,15 +1,12 @@
 // Agent Detail Page Styles
 .agent-detail__header {
   display: flex;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--bg-card-solid);
   border-radius: var(--radius-lg);
   padding: 18px 16px;
   margin-bottom: 12px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-light);
-  animation: fadeInUp var(--transition-slow) ease-out;
 }
 
 .agent-detail__avatar {
@@ -118,9 +115,6 @@
   display: flex;
   gap: 10px;
   margin-bottom: 16px;
-  animation: fadeInUp var(--transition-slow) ease-out;
-  animation-delay: 100ms;
-  animation-fill-mode: both;
 }
 
 .agent-detail__action-btn {
@@ -130,18 +124,10 @@
   align-items: center;
   gap: 4px;
   padding: 14px 8px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--bg-card-solid);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-light);
-  transition: transform var(--transition-fast), box-shadow var(--transition-normal);
-
-  &:active {
-    transform: scale(0.96);
-    box-shadow: var(--shadow-md);
-  }
 
   &--primary {
     background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
@@ -167,9 +153,7 @@
 
 // Current Version Card
 .agent-detail__current-version {
-  background: linear-gradient(135deg, rgba(245, 243, 255, 0.9), rgba(238, 242, 255, 0.9));
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--bg-card-solid);
   border-radius: var(--radius-lg);
   padding: 14px 16px;
   border: 1px solid rgba(99, 102, 241, 0.15);
@@ -226,7 +210,6 @@
 .agent-run {
   padding: 10px 0;
   border-bottom: 1px solid var(--border-light);
-  animation: fadeIn var(--transition-normal) ease-out;
 
   &:last-child {
     border-bottom: none;
@@ -315,18 +298,10 @@
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--bg-card-solid);
   border-radius: var(--radius-md);
   margin-bottom: 6px;
   border: 1px solid var(--border-light);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-
-  &:active {
-    transform: scale(0.98);
-    box-shadow: var(--shadow-sm);
-  }
 
   &:last-child {
     margin-bottom: 0;

@@ -109,7 +109,6 @@
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
-  animation: fadeIn var(--transition-fast) ease-out;
 }
 
 .editor-dropdown__item {
@@ -150,12 +149,6 @@
   padding: 4px 12px;
   border-radius: var(--radius-full);
   background: rgba(99, 102, 241, 0.1);
-  animation: scaleIn var(--transition-fast) ease-out;
-  transition: transform var(--transition-fast);
-
-  &:active {
-    transform: scale(0.95);
-  }
 
   &--mcp {
     background: rgba(16, 185, 129, 0.1);
@@ -220,7 +213,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeInUp var(--transition-slow) ease-out;
   transition: transform var(--transition-fast), opacity var(--transition-fast);
   position: relative;
   overflow: hidden;

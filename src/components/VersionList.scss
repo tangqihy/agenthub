@@ -15,19 +15,11 @@
 }
 
 .version-item {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--bg-card-solid);
   border-radius: var(--radius-lg);
   padding: 14px 16px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-light);
-  animation: fadeInUp var(--transition-slow) ease-out;
-  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
-
-  &:active {
-    box-shadow: var(--shadow-md);
-  }
 
   &--current {
     border-color: rgba(99, 102, 241, 0.2);

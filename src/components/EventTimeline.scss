@@ -7,8 +7,6 @@
   gap: 12px;
   position: relative;
   padding-bottom: 20px;
-  animation: fadeInUp var(--transition-slow) ease-out;
-  animation-fill-mode: both;
 
   &:last-child {
     padding-bottom: 0;
@@ -35,12 +33,11 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-full);
-  background: var(--glass-bg);
+  background: var(--bg-card-solid);
   border: 2px solid var(--border-medium);
   flex-shrink: 0;
   font-size: 14px;
   z-index: 1;
-  transition: border-color var(--transition-normal), background var(--transition-normal), box-shadow var(--transition-normal);
 
   .timeline-item--user_message & {
     border-color: var(--color-success);
@@ -104,13 +101,11 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  animation: fadeIn var(--transition-slow) ease-out;
 }
 
 .timeline-empty__icon {
   font-size: 48px;
   margin-bottom: 12px;
-  animation: float 3s ease-in-out infinite;
 }
 
 .timeline-empty__text {
