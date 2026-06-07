@@ -4,19 +4,19 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     environment:
       STORAGE_BACKEND: sqlite
       DATABASE_PATH: /app/data/agenthub.db
-      HERMES_DATA_DIR: /root/.hermes
+      HERMES_DATA_DIR: ${HERMES_DATA_DIR:-/root/.hermes}
       CRON_MOCK: "false"
       HERMES_BIN: hermes
       SYNC_INTERVAL_SECONDS: 5
-      API_BEARER_TOKEN: ${API_BEARER_TOKEN:-changeme}
+      API_BEARER_TOKEN: ${API_BEARER_TOKEN:?API_BEARER_TOKEN is required}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
     volumes:
-      - /root/.hermes:/root/.hermes:ro
-      - agenthub-data:/app/data
+      - ${HERMES_DATA_DIR:-/root/.hermes}:${HERMES_DATA_DIR:-/root/.hermes}:ro
+      - ${AGENTHUB_DATA_DIR:-./backend/data}:/app/data
     restart: unless-stopped
-
-volumes:
-  agenthub-data:

@@ -1,0 +1,157 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      TARGET_ENV: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build H5 frontend
+        run: pnpm build:h5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Run backend tests
+        working-directory: backend
+        run: python -m pytest
+
+      - name: Package release
+        run: |
+          tar \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='backend/.venv' \
+            --exclude='backend/data' \
+            --exclude='backend/.pytest_cache' \
+            -czf agenthub-release.tgz .
+
+      - name: Write deployment env file
+        env:
+          BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
+          API_BEARER_TOKEN: ${{ secrets.API_BEARER_TOKEN }}
+          HERMES_DATA_DIR: ${{ secrets.HERMES_DATA_DIR }}
+          AGENTHUB_DATA_DIR: ${{ secrets.AGENTHUB_DATA_DIR }}
+          LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
+        run: |
+          {
+            printf 'TARGET_ENV=%s\n' "$TARGET_ENV"
+            printf 'BACKEND_PORT=%s\n' "${BACKEND_PORT:-8000}"
+            printf 'API_BEARER_TOKEN=%s\n' "$API_BEARER_TOKEN"
+            printf 'HERMES_DATA_DIR=%s\n' "${HERMES_DATA_DIR:-/root/.hermes}"
+            printf 'AGENTHUB_DATA_DIR=%s\n' "$AGENTHUB_DATA_DIR"
+            printf 'LLM_BASE_URL=%s\n' "$LLM_BASE_URL"
+            printf 'LLM_API_KEY=%s\n' "$LLM_API_KEY"
+            printf 'LLM_MODEL=%s\n' "$LLM_MODEL"
+          } > deploy.env
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
+            "mkdir -p '$DEPLOY_PATH/releases/${GITHUB_SHA}' '$DEPLOY_PATH/shared'"
+          scp -i ~/.ssh/deploy_key agenthub-release.tgz \
+            "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/releases/${GITHUB_SHA}/agenthub-release.tgz"
+          scp -i ~/.ssh/deploy_key deploy.env \
+            "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/releases/${GITHUB_SHA}/.env"
+
+      - name: Activate release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
+            "DEPLOY_PATH='$DEPLOY_PATH' \
+             GITHUB_SHA='$GITHUB_SHA' \
+             bash -s" <<'REMOTE'
+          set -euo pipefail
+
+          release_dir="$DEPLOY_PATH/releases/$GITHUB_SHA"
+          current_dir="$DEPLOY_PATH/current"
+
+          cd "$release_dir"
+          tar -xzf agenthub-release.tgz
+
+          set -a
+          . ./.env
+          set +a
+          mkdir -p "${AGENTHUB_DATA_DIR:-$DEPLOY_PATH/shared/data}"
+
+          ln -sfn "$release_dir" "$current_dir"
+          cd "$current_dir"
+          docker compose \
+            --project-name "agenthub_${TARGET_ENV}" \
+            --env-file .env \
+            -f docker-compose.volcengine.yml \
+            up -d --build
+          REMOTE
+
+      - name: Smoke test
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          API_BEARER_TOKEN: ${{ secrets.API_BEARER_TOKEN }}
+        run: |
+          curl --fail --silent --show-error "$APP_URL/api/v1/health"
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $API_BEARER_TOKEN" \
+            "$APP_URL/api/v1/dashboard" > /dev/null

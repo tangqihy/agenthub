@@ -9,6 +9,10 @@
 
 ## 部署
 
+推荐使用 GitHub Actions 正式发布，见 [github-actions-deploy.md](./github-actions-deploy.md)。
+
+手工部署仍可用于首次引导或应急：
+
 ```bash
 # 在 VPS 上
 git clone <repo> && cd agenthub
