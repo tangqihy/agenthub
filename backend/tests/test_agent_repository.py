@@ -2,7 +2,7 @@
 
 import pytest
 import pytest_asyncio
-from app.models.domain import Agent, AgentVersion, AgentRun
+from app.models.domain import Agent, AgentVersion, AgentRun, ChatMessage
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
@@ -488,3 +488,39 @@ async def test_agent_new_fields_roundtrip(storage):
     assert fetched.derived_from_agent_id == "parent-xyz"
     assert fetched.usage_count == 42
     assert fetched.last_used_at == 5000
+
+
+# ── 13. V2.2: Chat message isolation ─────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_chat_messages_are_isolated_by_agent(storage):
+    """The same conversation_id must not leak messages across agents."""
+    await storage.create_chat_message(
+        ChatMessage(
+            id="msg-a1",
+            agent_id="agent-a",
+            conversation_id="conv-shared",
+            role="user",
+            content="message for agent a",
+            created_at=1000,
+            metadata={"source": "test"},
+        )
+    )
+    await storage.create_chat_message(
+        ChatMessage(
+            id="msg-b1",
+            agent_id="agent-b",
+            conversation_id="conv-shared",
+            role="user",
+            content="message for agent b",
+            created_at=1001,
+        )
+    )
+
+    agent_a_messages = await storage.list_chat_messages("agent-a", "conv-shared")
+    agent_b_messages = await storage.list_chat_messages("agent-b", "conv-shared")
+
+    assert [m.content for m in agent_a_messages] == ["message for agent a"]
+    assert [m.content for m in agent_b_messages] == ["message for agent b"]
+    assert agent_a_messages[0].status == "completed"
+    assert agent_a_messages[0].metadata == {"source": "test"}

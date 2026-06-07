@@ -150,8 +150,8 @@ class ChatRepository:
     async def create_message(self, msg: ChatMessage) -> None:
         await self._storage.create_chat_message(msg)
 
-    async def list_messages(self, conversation_id: str) -> list[ChatMessage]:
-        return await self._storage.list_chat_messages(conversation_id)
+    async def list_messages(self, agent_id: str, conversation_id: str) -> list[ChatMessage]:
+        return await self._storage.list_chat_messages(agent_id, conversation_id)
 
     async def list_conversations(self, agent_id: str, limit: int = 20) -> list[dict]:
         return await self._storage.list_conversations(agent_id, limit)

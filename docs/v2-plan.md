@@ -18,8 +18,8 @@
 | runtime | TEXT | `hermes` / `claude-code` / `codex` / `opencode` / `custom` |
 | publish_scope | TEXT | `private` / `family` / `public`，默认 `private` |
 | current_version | INTEGER | 当前版本号，默认 1 |
-| created_at | REAL | Unix timestamp |
-| updated_at | REAL | Unix timestamp |
+| created_at | INTEGER | Unix timestamp seconds |
+| updated_at | INTEGER | Unix timestamp seconds |
 
 ### agent_versions
 
@@ -29,7 +29,7 @@
 | agent_id | TEXT NOT NULL | FK → agents.id |
 | version | INTEGER NOT NULL | 版本号，从 1 递增 |
 | config_json | TEXT NOT NULL | JSON 字符串 |
-| created_at | REAL | Unix timestamp |
+| created_at | INTEGER | Unix timestamp seconds |
 
 **config_json 结构：**
 ```json
@@ -55,12 +55,17 @@
 | runtime | TEXT NOT NULL | 运行时标识 |
 | runtime_session_id | TEXT | 关联 runtime 的 session ID |
 | status | TEXT | `running` / `completed` / `failed` |
-| started_at | REAL | Unix timestamp |
-| ended_at | REAL | NULL = 运行中 |
+| started_at | INTEGER | Unix timestamp seconds |
+| ended_at | INTEGER | NULL = 运行中；Unix timestamp seconds |
 
 **与 Hermes sessions 的关联：**
 - `runtime = 'hermes'` 且 `runtime_session_id = sessions.external_id`
 - 通过 `agent_runs` 反查 Hermes session 数据
+
+**边界：**
+- Agent Registry 只管理 Agent 元数据、版本、运行记录和与 Hermes Session 的关联。
+- V2 不直接运行 Agent、不聊天、不直接调用 LLM；这些能力必须放到后续 Runtime Adapter 层。
+- 前端展示 Agent 时间字段时按秒级时间戳处理，统一使用 `new Date(ts * 1000)`。
 
 ---
 

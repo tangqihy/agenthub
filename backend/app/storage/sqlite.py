@@ -81,6 +81,16 @@ class SQLiteBackend(StorageBackend):
                     await db.execute(f"ALTER TABLE agents ADD COLUMN {col_name} {col_def}")
                 except Exception:
                     pass  # column already exists
+            chat_columns = [
+                ("status", "TEXT NOT NULL DEFAULT 'completed'"),
+                ("error", "TEXT"),
+                ("metadata_json", "TEXT NOT NULL DEFAULT '{}'"),
+            ]
+            for col_name, col_def in chat_columns:
+                try:
+                    await db.execute(f"ALTER TABLE chat_messages ADD COLUMN {col_name} {col_def}")
+                except Exception:
+                    pass  # column already exists
             await db.commit()
 
     async def list_sessions(
@@ -705,18 +715,34 @@ class SQLiteBackend(StorageBackend):
     async def create_chat_message(self, msg: ChatMessage) -> None:
         async with aiosqlite.connect(self.database_path) as db:
             await db.execute(
-                """INSERT INTO chat_messages (id, agent_id, conversation_id, role, content, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?)""",
-                (msg.id, msg.agent_id, msg.conversation_id, msg.role, msg.content, msg.created_at),
+                """INSERT INTO chat_messages (
+                       id, agent_id, conversation_id, role, content, created_at,
+                       status, error, metadata_json
+                   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    msg.id,
+                    msg.agent_id,
+                    msg.conversation_id,
+                    msg.role,
+                    msg.content,
+                    msg.created_at,
+                    msg.status,
+                    msg.error,
+                    json.dumps(msg.metadata, ensure_ascii=False),
+                ),
             )
             await db.commit()
 
-    async def list_chat_messages(self, conversation_id: str) -> list[ChatMessage]:
+    async def list_chat_messages(self, agent_id: str, conversation_id: str) -> list[ChatMessage]:
         async with aiosqlite.connect(self.database_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute(
-                "SELECT * FROM chat_messages WHERE conversation_id = ? ORDER BY created_at ASC",
-                (conversation_id,),
+                """
+                SELECT * FROM chat_messages
+                WHERE agent_id = ? AND conversation_id = ?
+                ORDER BY created_at ASC
+                """,
+                (agent_id, conversation_id),
             ) as cursor:
                 rows = await cursor.fetchall()
         return [
@@ -727,6 +753,9 @@ class SQLiteBackend(StorageBackend):
                 role=row["role"],
                 content=row["content"],
                 created_at=row["created_at"],
+                status=row["status"],
+                error=row["error"],
+                metadata=_loads(row["metadata_json"]),
             )
             for row in rows
         ]

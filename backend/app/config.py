@@ -13,10 +13,10 @@ class Settings(BaseSettings):
     hermes_bin: str = "hermes"
     api_bearer_token: str = ""
 
-    # LLM API
-    llm_base_url: str = "https://token-plan-cn.xiaomimimo.com/v1"
+    # OpenAI-compatible chat runtime. Keep provider details in environment.
+    llm_base_url: str = ""
     llm_api_key: str = ""
-    llm_model: str = "mimo-v2.5-pro"
+    llm_model: str = ""
 
 
 settings = Settings()

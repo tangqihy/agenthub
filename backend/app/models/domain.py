@@ -125,3 +125,6 @@ class ChatMessage(BaseModel):
     role: str  # 'user' or 'assistant'
     content: str
     created_at: int = 0
+    status: str = "completed"
+    error: str | None = None
+    metadata: dict = Field(default_factory=dict)

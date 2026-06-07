@@ -140,7 +140,18 @@ export const api = {
       `/api/v2/agents/${agentId}/conversations`,
     ),
   agentConversation: (agentId: string, conversationId: string) =>
-    request<{ conversation_id: string; messages: Array<{ id: string; role: string; content: string; created_at: number }> }>(
+    request<{
+      conversation_id: string
+      messages: Array<{
+        id: string
+        role: string
+        content: string
+        created_at: number
+        status: string
+        error?: string | null
+        metadata?: Record<string, unknown>
+      }>
+    }>(
       `/api/v2/agents/${agentId}/conversations/${conversationId}`,
     ),
 

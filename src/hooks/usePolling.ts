@@ -15,15 +15,17 @@ export function usePolling<T>(fetcher: () => Promise<T>, intervalMs = 5000, enab
   const [error, setError] = useState<string | null>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const fetcherRef = useRef(fetcher)
+  const hasDataRef = useRef(false)
   fetcherRef.current = fetcher
 
   const refresh = useCallback(async () => {
-    const isFirstLoad = data === null
+    const isFirstLoad = !hasDataRef.current
     if (!isFirstLoad) setIsRefreshing(true)
     const pollStart = performance.now()
     try {
       setError(null)
       const result = await fetcherRef.current()
+      hasDataRef.current = true
       setData(result)
     } catch (e) {
       setError(e instanceof Error ? e.message : '加载失败')
@@ -32,16 +34,15 @@ export function usePolling<T>(fetcher: () => Promise<T>, intervalMs = 5000, enab
       setLoading(false)
       setIsRefreshing(false)
     }
-  }, [data])
+  }, [])
 
-  // Re-fetch immediately when fetcher changes
   useEffect(() => {
     if (!enabled) return
     setLoading(true)
     refresh()
     const timer = setInterval(refresh, intervalMs)
     return () => clearInterval(timer)
-  }, [enabled, intervalMs, refresh, fetcher])
+  }, [enabled, intervalMs, refresh])
 
   return { data, loading, error, refresh, isRefreshing }
 }

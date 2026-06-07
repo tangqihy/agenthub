@@ -1,13 +1,13 @@
 import time
 import uuid
 
-import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from app.config import settings
 from app.deps import get_state
 from app.models.domain import ChatMessage
+from app.runtime import ChatRuntimeError, ChatRuntimeNotConfigured, OpenAICompatibleChatRuntime
 from app.security import require_auth
 
 router = APIRouter(
@@ -52,12 +52,11 @@ async def send_message(agent_id: str, body: ChatRequest, state=Depends(get_state
 
     # Build system prompt from agent config
     system_prompt = config.get("prompt", "") or _build_system_prompt(agent)
-    model = config.get("model", settings.llm_model)
+    model = config.get("model") or settings.llm_model
 
     conversation_id = body.conversation_id or _new_id("conv")
     now = int(time.time())
 
-    # Save user message
     user_msg = ChatMessage(
         id=_new_id("msg"),
         agent_id=agent_id,
@@ -66,38 +65,28 @@ async def send_message(agent_id: str, body: ChatRequest, state=Depends(get_state
         content=body.message,
         created_at=now,
     )
-    await state.chat.create_message(user_msg)
 
     # Get conversation history
-    history = await state.chat.list_messages(conversation_id)
+    history = await state.chat.list_messages(agent_id, conversation_id)
 
     # Build messages for LLM
     messages = [{"role": "system", "content": system_prompt}]
     for msg in history:
         messages.append({"role": msg.role, "content": msg.content})
+    messages.append({"role": user_msg.role, "content": user_msg.content})
 
-    # Call LLM API
+    runtime = OpenAICompatibleChatRuntime(
+        base_url=settings.llm_base_url,
+        api_key=settings.llm_api_key,
+        model=model,
+    )
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            resp = await client.post(
-                f"{settings.llm_base_url}/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {settings.llm_api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": model,
-                    "messages": messages,
-                    "max_tokens": 2048,
-                },
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            reply = data["choices"][0]["message"]["content"]
-    except Exception as e:
-        raise HTTPException(502, f"LLM API error: {str(e)}")
+        reply = await runtime.complete(messages)
+    except ChatRuntimeNotConfigured as e:
+        raise HTTPException(503, str(e))
+    except ChatRuntimeError as e:
+        raise HTTPException(502, str(e))
 
-    # Save assistant message
     assistant_msg = ChatMessage(
         id=_new_id("msg"),
         agent_id=agent_id,
@@ -106,6 +95,9 @@ async def send_message(agent_id: str, body: ChatRequest, state=Depends(get_state
         content=reply,
         created_at=now + 1,
     )
+
+    # Persist only after the runtime call succeeds, so failed calls do not pollute history.
+    await state.chat.create_message(user_msg)
     await state.chat.create_message(assistant_msg)
 
     # Update agent usage
@@ -132,5 +124,5 @@ async def list_conversations(agent_id: str, state=Depends(get_state)):
 async def get_conversation(agent_id: str, conversation_id: str, state=Depends(get_state)):
     if not await state.agents.get(agent_id):
         raise HTTPException(404, "Agent not found")
-    messages = await state.chat.list_messages(conversation_id)
+    messages = await state.chat.list_messages(agent_id, conversation_id)
     return {"conversation_id": conversation_id, "messages": messages}
