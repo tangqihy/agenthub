@@ -17,6 +17,13 @@ interface RuntimeStatus {
   model: string
 }
 
+interface ConversationSummary {
+  conversation_id: string
+  last_message_at: number
+  message_count: number
+  last_message?: string
+}
+
 export default function ChatPage() {
   const router = useRouter()
   const agentId = router.params.agentId || ''
@@ -24,6 +31,7 @@ export default function ChatPage() {
 
   const [agent, setAgent] = useState<Agent | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
+  const [conversations, setConversations] = useState<ConversationSummary[]>([])
   const [runtimeStatus, setRuntimeStatus] = useState<RuntimeStatus | null>(null)
   const [inputValue, setInputValue] = useState('')
   const [loading, setLoading] = useState(false)
@@ -31,11 +39,36 @@ export default function ChatPage() {
   const [convId, setConvId] = useState(conversationId)
   const scrollRef = useRef<string>('')
 
+  const loadConversations = useCallback(async () => {
+    if (!agentId) return
+    const items = await api.agentConversations(agentId)
+    setConversations(items)
+  }, [agentId])
+
+  const loadConversation = useCallback(async (id: string) => {
+    if (!agentId || !id) return
+    setHistoryLoading(true)
+    try {
+      const data = await api.agentConversation(agentId, id)
+      const history: Message[] = data.messages.map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      }))
+      setMessages(history)
+      setConvId(data.conversation_id)
+    } catch {
+      Taro.showToast({ title: '加载历史失败', icon: 'error' })
+    } finally {
+      setHistoryLoading(false)
+    }
+  }, [agentId])
+
   // Load agent info
   useEffect(() => {
     if (!agentId) return
     api.agent(agentId).then(setAgent).catch(() => {})
-  }, [agentId])
+    loadConversations().catch(() => {})
+  }, [agentId, loadConversations])
 
   useEffect(() => {
     api.chatRuntimeStatus().then(setRuntimeStatus).catch(() => {})
@@ -44,21 +77,8 @@ export default function ChatPage() {
   // Load conversation history if conversationId exists
   useEffect(() => {
     if (!agentId || !conversationId) return
-    setHistoryLoading(true)
-    api.agentConversation(agentId, conversationId)
-      .then((data) => {
-        const history: Message[] = data.messages.map((m) => ({
-          role: m.role as 'user' | 'assistant',
-          content: m.content,
-        }))
-        setMessages(history)
-        setConvId(data.conversation_id)
-      })
-      .catch(() => {
-        Taro.showToast({ title: '加载历史失败', icon: 'error' })
-      })
-      .finally(() => setHistoryLoading(false))
-  }, [agentId, conversationId])
+    loadConversation(conversationId)
+  }, [agentId, conversationId, loadConversation])
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -82,6 +102,7 @@ export default function ChatPage() {
       setConvId(res.conversation_id)
       const assistantMsg: Message = { role: 'assistant', content: res.reply }
       setMessages((prev) => [...prev, assistantMsg])
+      loadConversations().catch(() => {})
     } catch (e) {
       const message = e instanceof Error ? e.message : '发送失败'
       Taro.showToast({ title: message.slice(0, 20), icon: 'error' })
@@ -90,7 +111,13 @@ export default function ChatPage() {
     } finally {
       setLoading(false)
     }
-  }, [inputValue, loading, agentId, convId, runtimeStatus])
+  }, [inputValue, loading, agentId, convId, runtimeStatus, loadConversations])
+
+  const handleNewConversation = useCallback(() => {
+    setConvId('')
+    setMessages([])
+    setInputValue('')
+  }, [])
 
   const handleKeyDown = useCallback(
     (e: { detail: { keyCode: number } }) => {
@@ -131,6 +158,29 @@ export default function ChatPage() {
           </Text>
         </View>
       )}
+
+      <View className='chat-page__conversation-bar'>
+        <ScrollView className='chat-page__conversation-scroll' scrollX>
+          <View
+            className={`chat-page__conversation-chip ${!convId ? 'chat-page__conversation-chip--active' : ''}`}
+            onClick={handleNewConversation}
+          >
+            <Text className='chat-page__conversation-chip-text'>新对话</Text>
+          </View>
+          {conversations.map((item) => (
+            <View
+              key={item.conversation_id}
+              className={`chat-page__conversation-chip ${convId === item.conversation_id ? 'chat-page__conversation-chip--active' : ''}`}
+              onClick={() => loadConversation(item.conversation_id)}
+            >
+              <Text className='chat-page__conversation-chip-text'>
+                {(item.last_message || item.conversation_id).slice(0, 18)}
+              </Text>
+              <Text className='chat-page__conversation-chip-meta'>{item.message_count} 条</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Message List */}
       <ScrollView

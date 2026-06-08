@@ -764,10 +764,26 @@ class SQLiteBackend(StorageBackend):
         async with aiosqlite.connect(self.database_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute(
-                """SELECT conversation_id, MAX(created_at) AS last_message_at, COUNT(*) AS message_count
-                   FROM chat_messages WHERE agent_id = ?
-                   GROUP BY conversation_id ORDER BY last_message_at DESC LIMIT ?""",
-                (agent_id, limit),
+                """
+                SELECT
+                    conversation_id,
+                    MAX(created_at) AS last_message_at,
+                    COUNT(*) AS message_count,
+                    (
+                        SELECT content
+                        FROM chat_messages AS latest
+                        WHERE latest.agent_id = ?
+                          AND latest.conversation_id = chat_messages.conversation_id
+                        ORDER BY latest.created_at DESC
+                        LIMIT 1
+                    ) AS last_message
+                FROM chat_messages
+                WHERE agent_id = ?
+                GROUP BY conversation_id
+                ORDER BY last_message_at DESC
+                LIMIT ?
+                """,
+                (agent_id, agent_id, limit),
             ) as cursor:
                 rows = await cursor.fetchall()
         return [
@@ -775,6 +791,7 @@ class SQLiteBackend(StorageBackend):
                 "conversation_id": row["conversation_id"],
                 "last_message_at": row["last_message_at"],
                 "message_count": row["message_count"],
+                "last_message": row["last_message"],
             }
             for row in rows
         ]

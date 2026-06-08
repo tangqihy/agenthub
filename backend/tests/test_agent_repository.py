@@ -524,3 +524,13 @@ async def test_chat_messages_are_isolated_by_agent(storage):
     assert [m.content for m in agent_b_messages] == ["message for agent b"]
     assert agent_a_messages[0].status == "completed"
     assert agent_a_messages[0].metadata == {"source": "test"}
+
+    conversations = await storage.list_conversations("agent-a")
+    assert conversations == [
+        {
+            "conversation_id": "conv-shared",
+            "last_message_at": 1000,
+            "message_count": 1,
+            "last_message": "message for agent a",
+        }
+    ]

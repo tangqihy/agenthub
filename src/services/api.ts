@@ -161,7 +161,12 @@ export const api = {
       { method: 'POST', data: { message, conversation_id: conversationId } },
     ),
   agentConversations: (agentId: string) =>
-    request<Array<{ conversation_id: string; last_message_at: number; message_count: number }>>(
+    request<Array<{
+      conversation_id: string
+      last_message_at: number
+      message_count: number
+      last_message?: string
+    }>>(
       `/api/v2/agents/${agentId}/conversations`,
     ),
   agentConversation: (agentId: string, conversationId: string) =>
