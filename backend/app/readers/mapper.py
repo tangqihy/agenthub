@@ -30,10 +30,10 @@ def map_message_row(row: dict) -> Event | None:
     """Hermes messages 行 → AgentHub Event。
 
     Hermes 字段：id, session_id, role, content, tool_call_id,
-                 tool_calls, tool_name, timestamp, token_count
+                 tool_calls, tool_name, timestamp/created_at, token_count
     """
     role = row.get("role")
-    timestamp = int(row["timestamp"])
+    timestamp = int(row.get("timestamp") or row["created_at"])
     raw = dict(row)
     event_id = f"evt-{row['id']}"
 

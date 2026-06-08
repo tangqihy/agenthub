@@ -31,19 +31,27 @@ class HermesStateDbReader:
         return [dict(row) for row in rows]
 
     def fetch_messages_since(self, timestamp_after: int | None) -> list[dict]:
-        """读 messages，用 timestamp 做增量。"""
+        """读 messages，用 Hermes 时间列做增量。
+
+        不同 Hermes state.db 版本里消息时间字段可能叫 timestamp 或 created_at。
+        """
         if not self.db_path.exists():
             return []
         conn = self._connect()
         conn.row_factory = sqlite3.Row
+        columns = {
+            row["name"]
+            for row in conn.execute("PRAGMA table_info(messages)").fetchall()
+        }
+        time_column = "timestamp" if "timestamp" in columns else "created_at"
         if timestamp_after is not None:
             rows = conn.execute(
-                "SELECT * FROM messages WHERE timestamp > ? ORDER BY timestamp ASC",
+                f"SELECT * FROM messages WHERE {time_column} > ? ORDER BY {time_column} ASC",
                 (timestamp_after,),
             ).fetchall()
         else:
             rows = conn.execute(
-                "SELECT * FROM messages ORDER BY timestamp ASC"
+                f"SELECT * FROM messages ORDER BY {time_column} ASC"
             ).fetchall()
         conn.close()
         return [dict(row) for row in rows]
