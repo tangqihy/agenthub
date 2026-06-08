@@ -24,6 +24,8 @@
     "dev:alipay": "npm run build:alipay -- --watch",
     "dev:tt": "npm run build:tt -- --watch",
     "dev:h5": "npm run build:h5 -- --watch",
+    "dev:h5:remote": "AGENTHUB_API_TARGET=https://staging.innee.cn npm run dev:h5",
+    "dev:h5:prod": "AGENTHUB_API_TARGET=https://innee.cn npm run dev:h5",
     "dev:rn": "npm run build:rn -- --watch",
     "dev:qq": "npm run build:qq -- --watch",
     "dev:jd": "npm run build:jd -- --watch",
