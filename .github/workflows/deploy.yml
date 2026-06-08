@@ -140,6 +140,17 @@ jobs:
 
           ln -sfn "$release_dir" "$current_dir"
           cd "$current_dir"
+
+          # Release host port before recreating the backend container.
+          pkill -f 'python -m uvicorn app.main:app' 2>/dev/null || true
+          sleep 1
+
+          docker compose \
+            --project-name "agenthub_${TARGET_ENV}" \
+            --env-file .env \
+            -f docker-compose.volcengine.yml \
+            down --remove-orphans 2>/dev/null || true
+
           docker compose \
             --project-name "agenthub_${TARGET_ENV}" \
             --env-file .env \
