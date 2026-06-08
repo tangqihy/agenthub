@@ -68,7 +68,8 @@ jobs:
             --exclude='backend/.venv' \
             --exclude='backend/data' \
             --exclude='backend/.pytest_cache' \
-            -czf agenthub-release.tgz .
+            --exclude='agenthub-release.tgz' \
+            -czf /tmp/agenthub-release.tgz .
 
       - name: Write deployment env file
         env:
@@ -109,7 +110,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
             "mkdir -p '$DEPLOY_PATH/releases/${GITHUB_SHA}' '$DEPLOY_PATH/shared'"
-          scp -i ~/.ssh/deploy_key agenthub-release.tgz \
+          scp -i ~/.ssh/deploy_key /tmp/agenthub-release.tgz \
             "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/releases/${GITHUB_SHA}/agenthub-release.tgz"
           scp -i ~/.ssh/deploy_key deploy.env \
             "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/releases/${GITHUB_SHA}/.env"
