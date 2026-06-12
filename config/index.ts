@@ -1,8 +1,30 @@
 import { defineConfig, type UserConfigExport } from '@tarojs/cli'
+import path from 'path'
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import devConfig from './dev'
 import prodConfig from './prod'
 import vitePluginImp from 'vite-plugin-imp'
+
+// Vite plugin to resolve Node.js subpath imports (#minurl, #minpath, #minproc)
+// used by vfile/unified ecosystem. Maps them to browser-compatible versions.
+function viteSubpathImportsPlugin() {
+  const subpathMap: Record<string, string> = {
+    '#minurl': 'minurl.browser.js',
+    '#minpath': 'minpath.browser.js',
+    '#minproc': 'minproc.browser.js',
+  }
+  return {
+    name: 'subpath-imports-resolver',
+    resolveId(source: string, importer: string | undefined) {
+      if (subpathMap[source] && importer) {
+        // Resolve relative to the importer's package root
+        const pkgDir = importer.replace(/\/lib\/[^/]+$/, '')
+        return path.join(pkgDir, 'lib', subpathMap[source])
+      }
+      return null
+    },
+  }
+}
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<'vite'>(async (merge, { command, mode }) => {
   const baseConfig: UserConfigExport<'vite'> = {
@@ -28,7 +50,9 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
     },
     framework: 'react',
     compiler: {
-      vitePlugins: [vitePluginImp({
+      vitePlugins: [
+        viteSubpathImportsPlugin(),
+        vitePluginImp({
         libList: [
           {
             libName: '@nutui/nutui-react-taro',

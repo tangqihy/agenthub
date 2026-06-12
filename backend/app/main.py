@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.deps import init_app_state, shutdown_app_state
-from app.routers import agents, analytics, chat, cron, dashboard, sessions
+from app.routers import agents, analytics, chat, cron, dashboard, sessions, skills
 from app.security import verify_token
 
 
@@ -80,3 +80,4 @@ app.include_router(cron.router)
 app.include_router(analytics.router)
 app.include_router(agents.router)
 app.include_router(chat.router)
+app.include_router(skills.router)

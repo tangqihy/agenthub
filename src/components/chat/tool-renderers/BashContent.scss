@@ -1,0 +1,80 @@
+/**
+ * BashContent Styles
+ * Terminal command output display
+ */
+
+.bash-content {
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+  font-size: 24px;
+  
+  .bash-command {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #1e1e1e;
+    border-radius: 8px 8px 0 0;
+    
+    .prompt {
+      color: #4ec9b0;
+      font-weight: 600;
+      user-select: none;
+    }
+    
+    .command-text {
+      color: #d4d4d4;
+      word-break: break-all;
+    }
+  }
+  
+  .bash-output {
+    padding: 12px 16px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    border-radius: 0 0 8px 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    
+    text {
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.5;
+    }
+    
+    &.bash-error {
+      background: #2d1b1b;
+      
+      text {
+        color: #f48771;
+      }
+    }
+  }
+  
+  .bash-truncated {
+    padding: 12px 16px;
+    background: #2d2d2d;
+    border-radius: 0 0 8px 8px;
+    text-align: center;
+    cursor: pointer;
+    
+    &:active {
+      background: #3d3d3d;
+    }
+    
+    .truncated-text {
+      color: #569cd6;
+      font-size: 22px;
+    }
+  }
+  
+  .bash-empty {
+    padding: 12px 16px;
+    background: #1e1e1e;
+    border-radius: 0 0 8px 8px;
+    
+    .empty-text {
+      color: #6a9955;
+      font-style: italic;
+    }
+  }
+}

@@ -1,0 +1,73 @@
+/**
+ * SearchContent Styles
+ * Search results display
+ */
+
+.search-content {
+  font-size: 24px;
+  
+  .search-query {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f6f8fa;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #e8e8e8;
+    
+    .query-icon {
+      font-size: 24px;
+    }
+    
+    .query-text {
+      color: #0366d6;
+      font-weight: 500;
+      word-break: break-all;
+    }
+  }
+  
+  .search-results {
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    
+    .search-result-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .result-text {
+        font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+        color: #24292e;
+        word-break: break-all;
+        line-height: 1.5;
+      }
+    }
+  }
+  
+  .search-empty {
+    padding: 24px 16px;
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+    text-align: center;
+    
+    .empty-text {
+      color: #999;
+      font-style: italic;
+    }
+  }
+  
+  .search-error {
+    padding: 16px;
+    background: #fff2f0;
+    border-radius: 0 0 8px 8px;
+    
+    .error-text {
+      color: #cf1322;
+    }
+  }
+}

@@ -11,6 +11,8 @@ export default defineAppConfig({
     'pages/agents/detail',
     'pages/agents/editor',
     'pages/agents/catalog',
+    'pages/skills/index',
+    'pages/settings/index',
   ],
   window: {
     backgroundTextStyle: 'light',

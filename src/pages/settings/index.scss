@@ -1,0 +1,284 @@
+/* Settings Page */
+.settings-page {
+  padding-bottom: 40px;
+}
+
+/* ──────────────────────────────────────────────
+   Navigation Bar
+   ────────────────────────────────────────────── */
+.settings-navbar {
+  display: flex;
+  align-items: center;
+  padding: 12px 4px 20px;
+}
+
+.settings-navbar__back {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  transition: background var(--transition-fast, 0.15s);
+
+  &:active {
+    background: var(--bg-hover);
+  }
+}
+
+.settings-navbar__back-icon {
+  font-size: 18px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.settings-navbar__title {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.settings-navbar__spacer {
+  width: 40px;
+}
+
+/* ──────────────────────────────────────────────
+   Section
+   ────────────────────────────────────────────── */
+.settings-section {
+  margin-bottom: 28px;
+}
+
+.settings-section__title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+/* ──────────────────────────────────────────────
+   Card
+   ────────────────────────────────────────────── */
+.settings-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ──────────────────────────────────────────────
+   Theme Option (radio cards)
+   ────────────────────────────────────────────── */
+.settings-theme-option {
+  display: flex;
+  align-items: center;
+  padding: 16px 18px;
+  gap: 12px;
+  transition: background var(--transition-fast, 0.15s);
+  cursor: pointer;
+
+  &:active {
+    background: var(--bg-hover);
+  }
+
+  & + & {
+    border-top: 1px solid var(--border);
+  }
+
+  &--active {
+    background: var(--accent-subtle);
+  }
+}
+
+.settings-theme-option__radio {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color var(--transition-fast, 0.15s);
+
+  .settings-theme-option--active & {
+    border-color: var(--accent-text);
+  }
+}
+
+.settings-theme-option__radio-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-text);
+  animation: settingsRadioPulse 0.2s ease-out;
+}
+
+@keyframes settingsRadioPulse {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.settings-theme-option__icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.settings-theme-option__label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ──────────────────────────────────────────────
+   Row items
+   ────────────────────────────────────────────── */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  gap: 12px;
+
+  &--link {
+    cursor: pointer;
+
+    &:active {
+      background: var(--bg-hover);
+    }
+  }
+}
+
+.settings-row__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.settings-row__value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &--mono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  &--link {
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+}
+
+.settings-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 18px;
+}
+
+/* ──────────────────────────────────────────────
+   Connection Status Dot
+   ────────────────────────────────────────────── */
+.settings-row__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.3s, box-shadow 0.3s;
+
+  &--idle {
+    background: var(--text-muted);
+  }
+
+  &--connected {
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+    animation: statusPulse 2s ease-in-out infinite;
+  }
+
+  &--disconnected {
+    background: var(--error);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  }
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(34, 197, 94, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+  }
+}
+
+.settings-row__status-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ──────────────────────────────────────────────
+   Button
+   ────────────────────────────────────────────── */
+.settings-btn {
+  padding: 14px 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s);
+
+  &:active {
+    background: var(--bg-hover);
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.settings-btn__text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-text);
+}
+
+/* ──────────────────────────────────────────────
+   Footer
+   ────────────────────────────────────────────── */
+.settings-footer {
+  padding: 24px 0 16px;
+  text-align: center;
+}
+
+.settings-footer__text {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}

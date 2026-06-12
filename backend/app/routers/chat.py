@@ -1,7 +1,11 @@
+"""
+Chat Router - HTTP and WebSocket endpoints for agent conversations
+"""
+import json
 import time
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 from app.config import settings
@@ -19,6 +23,9 @@ router = APIRouter(
 
 def _new_id(prefix: str = "msg") -> str:
     return f"{prefix}-{uuid.uuid4().hex[:12]}"
+
+
+# ── Request/Response Models ──
 
 
 class ChatRequest(BaseModel):
@@ -39,11 +46,26 @@ class RuntimeStatus(BaseModel):
     model: str
 
 
+# ── Helper Functions ──
+
+
 def _build_system_prompt(agent) -> str:
     parts = [f"You are {agent.name}."]
     if agent.description:
         parts.append(agent.description)
     return "\n".join(parts)
+
+
+def _build_messages(system_prompt: str, history: list, user_content: str) -> list:
+    """Build message list for LLM"""
+    messages = [{"role": "system", "content": system_prompt}]
+    for msg in history:
+        messages.append({"role": msg.role, "content": msg.content})
+    messages.append({"role": "user", "content": user_content})
+    return messages
+
+
+# ── HTTP Endpoints ──
 
 
 @router.get("/runtime/status", response_model=RuntimeStatus)
@@ -85,10 +107,7 @@ async def send_message(agent_id: str, body: ChatRequest, state=Depends(get_state
     history = await state.chat.list_messages(agent_id, conversation_id)
 
     # Build messages for LLM
-    messages = [{"role": "system", "content": system_prompt}]
-    for msg in history:
-        messages.append({"role": msg.role, "content": msg.content})
-    messages.append({"role": user_msg.role, "content": user_msg.content})
+    messages = _build_messages(system_prompt, history, body.message)
 
     runtime = OpenAICompatibleChatRuntime(
         base_url=settings.llm_base_url,
@@ -111,7 +130,7 @@ async def send_message(agent_id: str, body: ChatRequest, state=Depends(get_state
         created_at=now + 1,
     )
 
-    # Persist only after the runtime call succeeds, so failed calls do not pollute history.
+    # Persist only after the runtime call succeeds
     await state.chat.create_message(user_msg)
     await state.chat.create_message(assistant_msg)
 
@@ -141,3 +160,139 @@ async def get_conversation(agent_id: str, conversation_id: str, state=Depends(ge
         raise HTTPException(404, "Agent not found")
     messages = await state.chat.list_messages(agent_id, conversation_id)
     return {"conversation_id": conversation_id, "messages": messages}
+
+
+# ── WebSocket Endpoint for Streaming ──
+
+
+@router.websocket("/{agent_id}/chat/stream")
+async def chat_stream(websocket: WebSocket, agent_id: str):
+    """WebSocket endpoint for streaming chat responses"""
+    await websocket.accept()
+    
+    try:
+        # Get state (we need to access it manually in WebSocket)
+        from app.deps import get_app_state
+        state = get_app_state()
+        
+        # Verify agent exists
+        agent = await state.agents.get(agent_id)
+        if not agent:
+            await websocket.send_json({"type": "error", "error": "Agent not found"})
+            await websocket.close()
+            return
+        
+        # Get agent config
+        current_version = await state.agents.get_version(agent_id, agent.current_version)
+        config = current_version.config_json if current_version else {}
+        system_prompt = config.get("prompt", "") or _build_system_prompt(agent)
+        model = config.get("model") or settings.llm_model
+        
+        # Create runtime
+        runtime = OpenAICompatibleChatRuntime(
+            base_url=settings.llm_base_url,
+            api_key=settings.llm_api_key,
+            model=model,
+        )
+        
+        while True:
+            # Receive message from client
+            data = await websocket.receive_json()
+            
+            if data.get("type") == "ping":
+                await websocket.send_json({"type": "pong"})
+                continue
+            
+            message = data.get("message", "")
+            conversation_id = data.get("conversation_id") or _new_id("conv")
+            
+            if not message:
+                await websocket.send_json({"type": "error", "error": "Empty message"})
+                continue
+            
+            now = int(time.time())
+            
+            # Create user message
+            user_msg = ChatMessage(
+                id=_new_id("msg"),
+                agent_id=agent_id,
+                conversation_id=conversation_id,
+                role="user",
+                content=message,
+                created_at=now,
+            )
+            
+            # Get history
+            history = await state.chat.list_messages(agent_id, conversation_id)
+            
+            # Build messages
+            messages = _build_messages(system_prompt, history, message)
+            
+            # Send user message confirmation
+            await websocket.send_json({
+                "type": "user_message",
+                "message_id": user_msg.id,
+                "conversation_id": conversation_id,
+            })
+            
+            # Stream response
+            full_content = ""
+            try:
+                # Send streaming start
+                await websocket.send_json({"type": "stream_start"})
+                
+                async for event in runtime.stream(messages):
+                    if event["type"] == "content":
+                        full_content += event["content"]
+                        await websocket.send_json({
+                            "type": "content",
+                            "content": event["content"],
+                        })
+                    elif event["type"] == "done":
+                        break
+                    elif event["type"] == "tool_calls":
+                        # Handle tool calls (future enhancement)
+                        await websocket.send_json({
+                            "type": "tool_calls",
+                            "tool_calls": event["tool_calls"],
+                        })
+                
+                # Create assistant message
+                assistant_msg = ChatMessage(
+                    id=_new_id("msg"),
+                    agent_id=agent_id,
+                    conversation_id=conversation_id,
+                    role="assistant",
+                    content=full_content,
+                    created_at=now + 1,
+                )
+                
+                # Persist messages
+                await state.chat.create_message(user_msg)
+                await state.chat.create_message(assistant_msg)
+                
+                # Update agent usage
+                agent.usage_count = (agent.usage_count or 0) + 1
+                agent.last_used_at = now
+                await state.agents.update(agent)
+                
+                # Send completion
+                await websocket.send_json({
+                    "type": "stream_end",
+                    "message_id": assistant_msg.id,
+                    "conversation_id": conversation_id,
+                })
+                
+            except ChatRuntimeError as e:
+                await websocket.send_json({
+                    "type": "error",
+                    "error": str(e),
+                })
+                
+    except WebSocketDisconnect:
+        pass
+    except Exception as e:
+        try:
+            await websocket.send_json({"type": "error", "error": str(e)})
+        except:
+            pass

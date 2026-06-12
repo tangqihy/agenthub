@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import { useState, useCallback } from 'react'
 import type { Event } from '../services/types'
 import './EventTimeline.scss'
 
@@ -23,9 +24,9 @@ function renderContent(event: Event) {
     case 'assistant_message':
       return String(p.content || '').slice(0, 200)
     case 'tool_call':
-      return String(p.tool || 'tool')
+      return String(p.tool || p.name || 'tool')
     case 'tool_result':
-      return String(p.tool || 'tool')
+      return String(p.tool || p.name || 'tool')
     case 'token_usage':
       return `${p.token_count || 0} tokens`
     case 'error':
@@ -34,6 +35,98 @@ function renderContent(event: Event) {
       return JSON.stringify(p).slice(0, 80)
   }
 }
+
+// ── Tool group component (collapsible) ─────────────────────────────────────
+
+interface ToolGroupProps {
+  events: Event[]
+}
+
+const ToolEventGroup: React.FC<ToolGroupProps> = ({ events }) => {
+  const [expanded, setExpanded] = useState(false)
+  const count = events.length
+  const handleToggle = useCallback(() => setExpanded((p) => !p), [])
+
+  // Get tool name(s) for summary
+  const toolNames = [...new Set(events.map((e) => String(e.payload.tool || e.payload.name || 'tool')))]
+  const summary =
+    count === 1
+      ? toolNames[0]
+      : `${count} 工具调用`
+
+  return (
+    <View className='timeline-item timeline-item--tool_group'>
+      <View className='timeline-item__line' />
+      <View className='timeline-item__dot'>
+        <Text>🔧</Text>
+      </View>
+      <View className='timeline-item__content'>
+        <View className='timeline-item__tool-group-header' onClick={handleToggle}>
+          <Text className={`timeline-item__chevron ${expanded ? 'timeline-item__chevron--expanded' : ''}`}>
+            ▶
+          </Text>
+          <Text className='timeline-item__label'>工具活动</Text>
+          <Text className='timeline-item__tool-summary'>{summary}</Text>
+          {count > 1 && (
+            <Text className='timeline-item__tool-count'>{count} 步</Text>
+          )}
+        </View>
+        {expanded && (
+          <View className='timeline-item__tool-group-items'>
+            {events.map((event, idx) => {
+              const isCall = event.event_type === 'tool_call'
+              const toolName = String(event.payload.tool || event.payload.name || 'tool')
+              return (
+                <View key={event.id} className='timeline-item__tool-item'>
+                  <View className='timeline-item__tool-item-dot'>
+                    <Text>{isCall ? '⚡' : '✅'}</Text>
+                  </View>
+                  <View className='timeline-item__tool-item-content'>
+                    <Text className='timeline-item__tool-item-name'>{toolName}</Text>
+                    <Text className='timeline-item__tool-item-type'>
+                      {isCall ? '调用' : '结果'}
+                    </Text>
+                  </View>
+                </View>
+              )
+            })}
+          </View>
+        )}
+      </View>
+    </View>
+  )
+}
+
+// ── Group consecutive tool events ──────────────────────────────────────────
+
+type TimelineEntry =
+  | { type: 'event'; event: Event }
+  | { type: 'tool_group'; events: Event[] }
+
+function groupToolEvents(events: Event[]): TimelineEntry[] {
+  const result: TimelineEntry[] = []
+  let toolBuffer: Event[] = []
+
+  for (const event of events) {
+    if (event.event_type === 'tool_call' || event.event_type === 'tool_result') {
+      toolBuffer.push(event)
+    } else {
+      if (toolBuffer.length > 0) {
+        result.push({ type: 'tool_group', events: toolBuffer })
+        toolBuffer = []
+      }
+      result.push({ type: 'event', event })
+    }
+  }
+  // Flush remaining tool events
+  if (toolBuffer.length > 0) {
+    result.push({ type: 'tool_group', events: toolBuffer })
+  }
+
+  return result
+}
+
+// ── Main timeline ──────────────────────────────────────────────────────────
 
 export default function EventTimeline({ events }: Props) {
   if (!events.length) {
@@ -45,9 +138,21 @@ export default function EventTimeline({ events }: Props) {
     )
   }
 
+  const entries = groupToolEvents(events)
+
   return (
     <View className='timeline'>
-      {events.map((event, index) => {
+      {entries.map((entry, index) => {
+        if (entry.type === 'tool_group') {
+          return (
+            <ToolEventGroup
+              key={`tool-group-${entry.events[0]?.id || index}`}
+              events={entry.events}
+            />
+          )
+        }
+
+        const event = entry.event
         const config = EVENT_CONFIG[event.event_type] || { icon: '📌', label: event.event_type }
         return (
           <View

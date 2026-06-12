@@ -1,0 +1,308 @@
+/**
+ * MarkdownRenderer Styles
+ * Full markdown typography with syntax-highlighted code blocks
+ * Uses ONLY CSS variables - no hardcoded colors
+ */
+
+/* Missing variables as local fallbacks */
+:root {
+  --font-mono: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+  --code-bg: #1e1e2e;
+  --bg-tertiary: rgba(0, 0, 0, 0.05);
+  --accent: var(--color-primary);
+  --accent-text: var(--color-primary);
+  --border: var(--border-medium);
+}
+
+/* ===== Markdown Body ===== */
+.markdown-body {
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: break-word;
+  overflow-wrap: break-word;
+
+  /* Links */
+  a {
+    color: var(--accent-text);
+    text-decoration: none;
+    word-break: break-all;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    margin: 16px 0 8px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text-primary);
+  }
+
+  h1 {
+    font-size: 1.5em;
+    margin-top: 24px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h2 {
+    font-size: 1.3em;
+    margin-top: 20px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: 1.15em;
+    margin-top: 16px;
+  }
+
+  h4 {
+    font-size: 1.05em;
+    margin-top: 14px;
+  }
+
+  h5, h6 {
+    font-size: 1em;
+    margin-top: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* Paragraphs */
+  p {
+    margin: 8px 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* Strong & Emphasis */
+  strong {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  /* Lists */
+  ul, ol {
+    padding-left: 24px;
+    margin: 8px 0;
+  }
+
+  li {
+    margin: 4px 0;
+    line-height: 1.6;
+
+    > p {
+      margin: 4px 0;
+    }
+  }
+
+  ul {
+    list-style-type: disc;
+
+    ul {
+      list-style-type: circle;
+    }
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  /* Blockquote */
+  blockquote {
+    margin: 8px 0;
+    padding: 4px 12px;
+    border-left: 3px solid var(--accent);
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* Horizontal rule */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  /* Inline code */
+  .inline-code {
+    background: var(--bg-tertiary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: var(--font-mono);
+    color: var(--color-danger);
+    word-break: break-all;
+  }
+
+  /* Table wrapper for horizontal scroll on mobile */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 8px 0;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead {
+    background: var(--bg-tertiary);
+  }
+
+  th {
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  /* Striped rows */
+  tbody tr:nth-child(even) {
+    background: var(--bg-tertiary);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Images */
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+    margin: 8px 0;
+  }
+}
+
+/* ===== Code Block ===== */
+.code-block {
+  background: var(--code-bg);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.code-lang {
+  font-weight: 500;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+}
+
+.code-copy-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-fast);
+  font-family: inherit;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.code-content {
+  padding: 12px;
+  overflow-x: auto;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  line-height: 1.5;
+  -webkit-overflow-scrolling: touch;
+
+  /* Reset any nested pre/code from syntax highlighter */
+  pre, code {
+    background: transparent !important;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre;
+  }
+
+  /* Syntax highlighter container reset */
+  > div {
+    background: transparent !important;
+  }
+}
+
+.code-pre {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ===== Diff Lines ===== */
+.diff-add {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+.diff-remove {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+.diff-hunk {
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 0 4px;
+}

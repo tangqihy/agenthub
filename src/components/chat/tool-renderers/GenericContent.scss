@@ -1,0 +1,114 @@
+/**
+ * GenericContent Styles
+ * Generic tool result display
+ */
+
+.generic-content {
+  font-size: 24px;
+  
+  .generic-input {
+    margin-bottom: 16px;
+    
+    .input-label {
+      display: block;
+      font-size: 22px;
+      color: #666;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .input-json {
+      background: #f6f8fa;
+      border-radius: 8px;
+      padding: 12px 16px;
+      max-height: 200px;
+      overflow-y: auto;
+      
+      text {
+        font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+        font-size: 22px;
+        white-space: pre-wrap;
+        word-break: break-all;
+        color: #24292e;
+        line-height: 1.5;
+      }
+    }
+  }
+  
+  .generic-result {
+    .result-label {
+      display: block;
+      font-size: 22px;
+      color: #666;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .result-content {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      padding: 12px 16px;
+      
+      text {
+        white-space: pre-wrap;
+        word-break: break-all;
+        color: #24292e;
+        line-height: 1.5;
+      }
+    }
+    
+    &.generic-error {
+      .result-content {
+        background: #fff2f0;
+        border-color: #ffccc7;
+        
+        text {
+          color: #cf1322;
+        }
+      }
+    }
+    
+    .expand-btn {
+      padding: 8px 16px;
+      text-align: center;
+      cursor: pointer;
+      
+      &:active {
+        background: #f0f0f0;
+      }
+      
+      .expand-text {
+        color: #0366d6;
+        font-size: 22px;
+      }
+    }
+  }
+  
+  .generic-error-content {
+    margin-top: 12px;
+    
+    .error-label {
+      display: block;
+      font-size: 22px;
+      color: #cf1322;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .error-text {
+      color: #cf1322;
+      word-break: break-all;
+    }
+  }
+  
+  .generic-empty {
+    padding: 16px;
+    text-align: center;
+    
+    .empty-text {
+      color: #999;
+      font-style: italic;
+    }
+  }
+}

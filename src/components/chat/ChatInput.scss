@@ -1,0 +1,117 @@
+/**
+ * ChatInput Styles
+ * Message input bar with integrated send/stop button
+ */
+
+.chat-input-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary, #fff);
+  border-top: 1px solid var(--border-color, #e8e8e8);
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 100;
+  box-sizing: border-box;
+
+  &.focused {
+    border-top-color: var(--accent, #1890ff);
+  }
+
+  .chat-input-wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: var(--bg-primary, #f5f5f5);
+    border-radius: 24px;
+    padding: 10px 12px 10px 16px;
+    min-height: 40px;
+  }
+
+  .chat-input-field {
+    flex: 1;
+    min-height: 24px;
+    max-height: 120px;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-primary, #333);
+    padding: 0;
+    box-sizing: border-box;
+
+    &.disabled {
+      opacity: 0.5;
+      color: var(--text-secondary, #999);
+    }
+  }
+
+  .chat-input-placeholder {
+    color: var(--text-secondary, #999);
+    font-size: 15px;
+  }
+
+  .chat-send-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    background: var(--accent, #1890ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    opacity: 0.4;
+    cursor: not-allowed;
+
+    &.active {
+      opacity: 1;
+      cursor: pointer;
+
+      &:active {
+        background: var(--accent-dark, #096dd9);
+        transform: scale(0.95);
+      }
+    }
+
+    .chat-send-icon {
+      font-size: 20px;
+      color: #fff;
+      font-weight: 700;
+      line-height: 1;
+    }
+  }
+
+  .chat-stop-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    background: #e74c3c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:active {
+      background: #c0392b;
+      transform: scale(0.95);
+    }
+
+    .chat-stop-icon {
+      font-size: 16px;
+      color: #fff;
+      line-height: 1;
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

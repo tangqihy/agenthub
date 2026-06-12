@@ -70,6 +70,9 @@ export const api = {
     return request<Session[]>(`/api/v1/sessions${qs ? `?${qs}` : ''}`)
   },
   session: (id: string) => request<Session>(`/api/v1/sessions/${id}`),
+  deleteSession: (id: string) => request<void>(`/api/v1/sessions/${id}`, { method: 'DELETE' }),
+  renameSession: (id: string, title: string) =>
+    request<Session>(`/api/v1/sessions/${id}`, { method: 'PATCH', data: { title } }),
   events: (id: string, since?: number) => {
     const qs = since ? `?since=${since}` : ''
     return request<Event[]>(`/api/v1/sessions/${id}/events${qs}`)
@@ -184,6 +187,42 @@ export const api = {
     }>(
       `/api/v2/agents/${agentId}/conversations/${conversationId}`,
     ),
+
+  // Skills
+  skillsList: (params?: { category?: string; search?: string; source?: string; limit?: number; offset?: number }) => {
+    const q = new URLSearchParams()
+    if (params?.category) q.set('category', params.category)
+    if (params?.search) q.set('search', params.search)
+    if (params?.source) q.set('source', params.source)
+    if (params?.limit) q.set('limit', String(params.limit))
+    if (params?.offset) q.set('offset', String(params.offset))
+    const qs = q.toString()
+    return request<Array<{
+      name: string
+      description: string
+      category: string
+      path: string
+      source: string
+      has_scripts: boolean
+      has_references: boolean
+      tags: string[]
+      installs: number
+      stars: number
+    }>>(`/api/v2/skills/${qs ? `?${qs}` : ''}`)
+  },
+  skillsCategories: () =>
+    request<string[]>('/api/v2/skills/categories'),
+  skillDetail: (category: string, name: string) =>
+    request<{
+      name: string
+      description: string
+      category: string
+      path: string
+      content: string
+      has_scripts: boolean
+      has_references: boolean
+      tags: string[]
+    }>(`/api/v2/skills/${category}/${name}`),
 
   // Auth
   authVerify: () => request<{ status: string }>('/api/v1/auth/verify'),

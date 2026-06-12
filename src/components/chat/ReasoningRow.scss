@@ -1,0 +1,150 @@
+.reasoning-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 14px;
+
+  &--active {
+    .reasoning-label {
+      color: var(--color-purple, #8b5cf6);
+    }
+  }
+}
+
+.reasoning-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-secondary, #f3f4f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reasoning-avatar-icon {
+  font-size: 16px;
+}
+
+.reasoning-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Summary row */
+.reasoning-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--bg-secondary, #f3f4f6);
+  border: 1px solid var(--border, #e5e7eb);
+  cursor: pointer;
+  user-select: none;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+/* Chevron */
+.reasoning-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--text-tertiary, #9ca3af);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+
+  &--expanded {
+    transform: rotate(90deg);
+  }
+}
+
+.reasoning-brain-icon {
+  font-size: 14px;
+}
+
+.reasoning-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+}
+
+.reasoning-line-count {
+  font-size: 12px;
+  color: var(--text-tertiary, #9ca3af);
+  margin-left: auto;
+}
+
+/* Spinner for active state */
+.reasoning-spinner {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+}
+
+.reasoning-spinner-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-purple, #8b5cf6);
+  animation: reasoning-pulse 1.2s ease-in-out infinite;
+
+  &:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  &:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+
+@keyframes reasoning-pulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Expandable content */
+.reasoning-expand {
+  overflow: hidden;
+  animation: reasoning-expand-enter 0.25s ease forwards;
+}
+
+@keyframes reasoning-expand-enter {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 5000px;
+    opacity: 1;
+  }
+}
+
+.reasoning-pre {
+  margin-top: 4px;
+  padding: 12px 14px;
+  background: var(--bg-tertiary, #f9fafb);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: var(--text-secondary, #4b5563);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+}

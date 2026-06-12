@@ -1,0 +1,128 @@
+/**
+ * EditContent Styles
+ * File edit diff display
+ */
+
+.edit-content {
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+  font-size: 24px;
+  
+  .edit-file-path {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f6f8fa;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #e8e8e8;
+    
+    .file-icon {
+      font-size: 24px;
+    }
+    
+    .file-path {
+      color: #0366d6;
+      font-weight: 500;
+      word-break: break-all;
+    }
+  }
+  
+  .edit-stats {
+    display: flex;
+    gap: 16px;
+    padding: 8px 16px;
+    background: #f6f8fa;
+    border-bottom: 1px solid #e8e8e8;
+    
+    .stat-add {
+      color: #22863a;
+      font-weight: 600;
+    }
+    
+    .stat-remove {
+      color: #cb2431;
+      font-weight: 600;
+    }
+  }
+  
+  .edit-diff {
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    
+    .diff-line {
+      display: flex;
+      padding: 4px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      
+      .diff-marker {
+        width: 24px;
+        color: #999;
+        user-select: none;
+        flex-shrink: 0;
+      }
+      
+      .diff-text {
+        flex: 1;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      
+      &.diff-add {
+        background: #e6ffec;
+        
+        .diff-marker {
+          color: #22863a;
+        }
+        
+        .diff-text {
+          color: #22863a;
+        }
+      }
+      
+      &.diff-remove {
+        background: #ffeef0;
+        
+        .diff-marker {
+          color: #cb2431;
+        }
+        
+        .diff-text {
+          color: #cb2431;
+        }
+      }
+      
+      &.diff-context {
+        background: #fff;
+        
+        .diff-text {
+          color: #24292e;
+        }
+      }
+    }
+  }
+  
+  .edit-new-file {
+    .new-file-label {
+      display: block;
+      padding: 12px 16px;
+      background: #f6f8fa;
+      color: #666;
+      font-size: 22px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    
+    .new-file-content {
+      padding: 16px;
+      background: #fff;
+      border-radius: 0 0 8px 8px;
+      
+      text {
+        white-space: pre-wrap;
+        word-break: break-all;
+        line-height: 1.5;
+        color: #24292e;
+      }
+    }
+  }
+}

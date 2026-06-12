@@ -1,0 +1,84 @@
+/**
+ * ThinkingBlock Styles
+ * Collapsible thinking process display
+ */
+
+.thinking-block {
+  margin: 12px 24px;
+  background: #f6f6f6;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  overflow: hidden;
+  
+  .thinking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    
+    &:active {
+      background: #f0f0f0;
+    }
+    
+    .thinking-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      
+      .thinking-icon {
+        font-size: 28px;
+      }
+      
+      .thinking-label {
+        font-size: 26px;
+        font-weight: 500;
+        color: #666;
+      }
+      
+      .thinking-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #e8e8e8;
+        border-top-color: #1890ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+    }
+    
+    .thinking-toggle {
+      .toggle-icon {
+        font-size: 24px;
+        color: #999;
+      }
+    }
+  }
+  
+  .thinking-preview {
+    padding: 0 20px 16px;
+    
+    .preview-text {
+      font-size: 24px;
+      color: #999;
+      font-style: italic;
+    }
+  }
+  
+  .thinking-content {
+    padding: 16px 20px;
+    background: #fff;
+    border-top: 1px solid #e8e8e8;
+    
+    text {
+      font-size: 26px;
+      color: #666;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,4 +1,5 @@
 import { View, Text, Input, Textarea } from '@tarojs/components'
+import { SkillPicker } from '../../components/SkillPicker'
 import Taro, { useRouter } from '@tarojs/taro'
 import { useState, useEffect } from 'react'
 import { api } from '../../services/api'
@@ -241,29 +242,11 @@ export default function AgentEditorPage() {
         {/* Skills */}
         <View className='editor-field'>
           <Text className='editor-label'>Skills</Text>
-          <View className='editor-tag-list'>
-            {skills.map((s, i) => (
-              <View key={`${s}-${i}`} className='editor-tag'>
-                <Text className='editor-tag__text'>{s}</Text>
-                <Text className='editor-tag__remove' onClick={() => handleRemoveSkill(i)}>✕</Text>
-              </View>
-            ))}
-          </View>
-          <View className='editor-add-row'>
-            <Input
-              className='editor-input editor-input--flex'
-              placeholder='添加 skill...'
-              value={newSkill}
-              onInput={(e) => setNewSkill(e.detail.value)}
-              onConfirm={handleAddSkill}
-              confirmType='done'
-            />
-            <View className='editor-add-btn' onClick={handleAddSkill}>
-              <Text className='editor-add-btn__text'>+</Text>
-            </View>
-          </View>
+          <SkillPicker
+            selected={skills}
+            onChange={setSkills}
+          />
         </View>
-
         {/* MCP */}
         <View className='editor-field'>
           <Text className='editor-label'>MCP Servers</Text>
