@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import Taro, { useRouter } from '@tarojs/taro'
 import { useState } from 'react'
 import { usePolling } from '../../hooks/usePolling'
@@ -93,6 +94,7 @@ export default function AgentDetailPage() {
   const hasNotes = agent.notes || agent.use_cases || agent.caveats
 
   return (
+      <AppLayout>
     <View className='page'>
       {/* Header */}
       <View className='agent-detail__header'>
@@ -361,5 +363,5 @@ export default function AgentDetailPage() {
 
       <BottomNav active='/pages/agents/index' />
     </View>
-  )
+      </AppLayout>)
 }

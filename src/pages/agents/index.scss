@@ -1,13 +1,11 @@
-.agents-header {
-  margin-bottom: 16px;
-}
+// ============================================================================
+// Agents Page Styles
+// Agent management page with search, filter tabs, and card grid
+// ============================================================================
 
-.agents-title {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-}
+@import '../../styles/themes';
+
+// ── Search bar ─────────────────────────────────────────────────────────────
 
 .agents-search {
   margin-bottom: 12px;
@@ -17,19 +15,25 @@
   width: 100%;
   height: 42px;
   padding: 0 14px;
-  background: var(--bg-card-solid);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
   font-size: 14px;
   color: var(--text-primary);
   box-sizing: border-box;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
 
   &:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px var(--color-primary-glow);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
   }
 }
+
+// ── Filter tabs ────────────────────────────────────────────────────────────
 
 .agents-tabs {
   display: flex;
@@ -48,13 +52,13 @@
   flex-shrink: 0;
   padding: 7px 16px;
   border-radius: var(--radius-full);
-  background: var(--bg-card-solid);
-  border: 1px solid var(--border-light);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  transition: all 0.15s ease;
 
   &--active {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    background: var(--accent);
     border-color: transparent;
-    box-shadow: 0 2px 12px var(--color-primary-glow);
 
     .agents-tab__text {
       color: #ffffff;
@@ -69,9 +73,13 @@
   white-space: nowrap;
 }
 
+// ── Agent list ─────────────────────────────────────────────────────────────
+
 .agents-list {
   min-height: 200px;
 }
+
+// ── Empty state ────────────────────────────────────────────────────────────
 
 .agents-empty {
   display: flex;
@@ -97,19 +105,27 @@
   color: var(--text-muted);
 }
 
+// ── FAB (Floating Action Button) ───────────────────────────────────────────
+
 .agents-fab {
   position: fixed;
   right: 20px;
-  bottom: 90px;
+  bottom: 40px;
   width: 54px;
   height: 54px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  background: var(--accent);
+  box-shadow: var(--shadow-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  &:active {
+    background: var(--accent-hover);
+    transform: scale(0.92);
+  }
 }
 
 .agents-fab__text {

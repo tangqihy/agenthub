@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import Taro from '@tarojs/taro'
 import { useState, useEffect } from 'react'
 import { api } from '../../services/api'
@@ -79,6 +80,7 @@ export default function SettingsPage() {
   }
 
   return (
+      <AppLayout>
     <View className='page settings-page'>
       {/* Navigation Bar */}
       <View className='settings-navbar'>
@@ -186,5 +188,5 @@ export default function SettingsPage() {
         <Text className='settings-footer__text'>AgentHub © 2025</Text>
       </View>
     </View>
-  )
+      </AppLayout>)
 }

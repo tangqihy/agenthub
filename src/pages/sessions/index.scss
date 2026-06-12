@@ -3,6 +3,16 @@
 // Modern card-based design using CSS variables from design system
 // ============================================================================
 
+@import '../../styles/themes';
+
+// ── Page header ────────────────────────────────────────────────────────────
+
+.sessions-page {
+  .page-header {
+    margin-bottom: 20px;
+  }
+}
+
 // ── Search bar ─────────────────────────────────────────────────────────────
 
 .sessions-search {
@@ -17,17 +27,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--bg-card-solid, #fff);
-  border-radius: var(--radius-lg, 16px);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
   padding: 10px 14px;
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.06));
-  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--border);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:focus-within {
-    border-color: var(--border-focus, var(--color-primary, #6366f1));
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.06)),
-      0 0 0 3px var(--accent-subtle, rgba(99, 102, 241, 0.1));
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
   }
 }
 
@@ -40,11 +48,11 @@
 .sessions-search__input {
   flex: 1;
   font-size: 14px;
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
   line-height: 1.4;
 
   &::placeholder {
-    color: var(--text-muted, #94a3b8);
+    color: var(--text-muted);
   }
 }
 
@@ -55,17 +63,17 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--bg-tertiary, #f0f0f0);
+  background: var(--bg-tertiary);
   flex-shrink: 0;
 
   text {
     font-size: 11px;
-    color: var(--text-muted, #94a3b8);
+    color: var(--text-muted);
     line-height: 1;
   }
 
   &:active {
-    background: var(--bg-active, #e0e0e0);
+    background: var(--bg-active);
   }
 }
 
@@ -85,7 +93,7 @@
 .sessions-group__label {
   font-size: 12px;
   font-weight: 700;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -97,48 +105,41 @@
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  border-radius: var(--radius-full, 9999px);
-  background: var(--accent-subtle, rgba(99, 102, 241, 0.1));
+  border-radius: var(--radius-full);
+  background: var(--accent-subtle);
   font-size: 11px;
   font-weight: 700;
-  color: var(--accent-text, var(--color-primary, #6366f1));
+  color: var(--accent-text);
 }
 
-// ── Session card (enhanced) ────────────────────────────────────────────────
+// ── Session card ───────────────────────────────────────────────────────────
 
 .session-card {
   display: flex;
-  background: var(--bg-card-solid, #fff);
-  border-radius: var(--radius-lg, 16px);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
   margin-bottom: 10px;
-  box-shadow: var(--shadow-xs, 0 1px 2px rgba(0, 0, 0, 0.03));
   overflow: hidden;
-  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.05));
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid var(--border);
+  transition: transform 0.15s ease, background 0.15s ease;
 
   &:active {
     transform: scale(0.985);
-    box-shadow: var(--shadow-xs);
+    background: var(--bg-hover);
   }
 
   // Active session highlight
   &--active {
-    border-color: rgba(16, 185, 129, 0.25);
-    background: linear-gradient(
-      135deg,
-      var(--bg-card-solid, #fff) 0%,
-      rgba(16, 185, 129, 0.03) 100%
-    );
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.06)),
-      0 0 12px rgba(16, 185, 129, 0.06);
+    border-color: rgba(34, 197, 94, 0.2);
+    background: var(--bg-secondary);
 
     .session-card__indicator {
-      background: linear-gradient(180deg, #10b981, #34d399);
+      background: linear-gradient(180deg, var(--success), #34d399);
     }
 
     .session-card__badge {
-      background: rgba(16, 185, 129, 0.1);
-      color: #059669;
+      background: var(--success-bg);
+      color: var(--success);
     }
   }
 }
@@ -146,7 +147,7 @@
 .session-card__indicator {
   width: 4px;
   min-height: 100%;
-  background: linear-gradient(180deg, #c7d2fe, #a5b4fc);
+  background: linear-gradient(180deg, var(--accent-text), var(--accent-hover));
   flex-shrink: 0;
   border-radius: 2px;
 }
@@ -171,7 +172,7 @@
   flex: 1;
   font-size: 15px;
   font-weight: 600;
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -183,10 +184,10 @@
   flex: 1;
   font-size: 15px;
   font-weight: 600;
-  color: var(--text-primary, #0f172a);
-  background: var(--bg-tertiary, #f0f0f0);
-  border: 2px solid var(--border-focus, var(--color-primary, #6366f1));
-  border-radius: var(--radius-sm, 8px);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-focus);
+  border-radius: var(--radius-sm);
   padding: 2px 8px;
   line-height: 1.35;
   min-width: 0;
@@ -197,17 +198,17 @@
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 9999px);
-  background: rgba(148, 163, 184, 0.1);
+  border-radius: var(--radius-full);
+  background: var(--bg-tertiary);
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted);
   white-space: nowrap;
   flex-shrink: 0;
 
   &--active {
-    background: rgba(16, 185, 129, 0.1);
-    color: #059669;
+    background: var(--success-bg);
+    color: var(--success);
   }
 }
 
@@ -238,14 +239,14 @@
 .session-card__tag {
   display: inline-flex;
   padding: 1px 7px;
-  border-radius: var(--radius-xs, 6px);
-  background: rgba(148, 163, 184, 0.08);
-  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.05));
+  border-radius: var(--radius-xs);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
 
   & > text {
     font-size: 11px;
     font-weight: 500;
-    color: var(--text-secondary, #475569);
+    color: var(--text-secondary);
   }
 }
 
@@ -258,14 +259,14 @@
 .session-card__stat {
   font-size: 12px;
   font-weight: 500;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 
 .session-card__time {
   font-size: 12px;
   font-weight: 500;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted);
   margin-left: auto;
 }
 
@@ -276,7 +277,7 @@
   align-items: center;
   gap: 6px;
   padding-top: 6px;
-  border-top: 1px solid var(--border-light, rgba(0, 0, 0, 0.04));
+  border-top: 1px solid var(--border);
 }
 
 .session-card__action-btn {
@@ -284,30 +285,31 @@
   align-items: center;
   justify-content: center;
   padding: 4px 10px;
-  border-radius: var(--radius-sm, 8px);
-  background: var(--bg-tertiary, #f0f0f0);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
   transition: background 0.15s ease;
 
   text {
     font-size: 12px;
+    color: var(--text-secondary);
   }
 
   &:active {
-    background: var(--bg-active, #e0e0e0);
+    background: var(--bg-active);
   }
 
   &--danger {
-    background: var(--error-bg, rgba(239, 68, 68, 0.1));
+    background: var(--error-bg);
     animation: shake 0.3s ease;
 
     text {
       font-size: 11px;
       font-weight: 600;
-      color: var(--error, #ef4444);
+      color: var(--error);
     }
 
     &:active {
-      background: var(--error, #ef4444);
+      background: var(--error);
       text {
         color: #fff;
       }
@@ -334,13 +336,13 @@
 .sessions-empty__title {
   font-size: 17px;
   font-weight: 600;
-  color: var(--text-primary, #0f172a);
+  color: var(--text-primary);
   margin-bottom: 6px;
 }
 
 .sessions-empty__subtitle {
   font-size: 13px;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted);
   text-align: center;
   line-height: 1.5;
 }
@@ -352,8 +354,8 @@
   align-items: center;
   gap: 8px;
   padding: 14px 16px;
-  background: var(--error-bg, rgba(239, 68, 68, 0.06));
-  border-radius: var(--radius-lg, 16px);
+  background: var(--error-bg);
+  border-radius: var(--radius-lg);
   margin-bottom: 14px;
   border: 1px solid rgba(239, 68, 68, 0.15);
 }
@@ -366,7 +368,7 @@
 .sessions-error__text {
   font-size: 13px;
   font-weight: 500;
-  color: var(--error, #ef4444);
+  color: var(--error);
 }
 
 // ── Animations ─────────────────────────────────────────────────────────────

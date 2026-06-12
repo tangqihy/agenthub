@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import Taro from '@tarojs/taro'
 import { useState } from 'react'
 import { usePolling } from '../../hooks/usePolling'
@@ -23,6 +24,7 @@ export default function AgentCatalogPage() {
   )
 
   return (
+      <AppLayout>
     <View className='page'>
       <View className='catalog-header'>
         <Text className='catalog-title'>📚 Agent 目录</Text>
@@ -66,5 +68,5 @@ export default function AgentCatalogPage() {
 
       <BottomNav active='/pages/agents/index' />
     </View>
-  )
+      </AppLayout>)
 }

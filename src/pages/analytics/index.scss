@@ -1,0 +1,123 @@
+// ============================================================================
+// Analytics Page Styles
+// Data analytics page with summary cards and data tables
+// ============================================================================
+
+@import '../../styles/themes';
+
+// ── Summary cards grid ─────────────────────────────────────────────────────
+
+.analytics-summary {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.analytics-card {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.analytics-card__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.analytics-card__value {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.analytics-card__cost {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent-text);
+  margin-top: 4px;
+}
+
+// ── Data tables ────────────────────────────────────────────────────────────
+
+.analytics-table {
+  width: 100%;
+}
+
+.analytics-table__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.analytics-table__label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 12px;
+}
+
+.analytics-table__value {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// ── Token summary cards (compat) ───────────────────────────────────────────
+
+.token-card {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.token-card__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.token-card__tokens {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.token-card__cost {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent-text);
+  margin-top: 4px;
+}

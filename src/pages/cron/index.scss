@@ -1,0 +1,166 @@
+// ============================================================================
+// Cron Page Styles
+// Scheduled tasks management page
+// ============================================================================
+
+@import '../../styles/themes';
+
+// ── Cron job cards ─────────────────────────────────────────────────────────
+
+.cron-list {
+  min-height: 200px;
+}
+
+.cron-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: background 0.15s ease;
+
+  &:active {
+    background: var(--bg-hover);
+  }
+}
+
+.cron-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.cron-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── Status badge ───────────────────────────────────────────────────────────
+
+.cron-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  &--active {
+    background: var(--success-bg);
+    color: var(--success);
+  }
+
+  &--paused {
+    background: var(--warning-bg);
+    color: var(--warning);
+  }
+
+  &--stopped,
+  &--error {
+    background: var(--error-bg);
+    color: var(--error);
+  }
+}
+
+.cron-card__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+// ── Card body ──────────────────────────────────────────────────────────────
+
+.cron-card__schedule {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
+}
+
+// ── Card actions ───────────────────────────────────────────────────────────
+
+.cron-card__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.cron-card__btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+
+  &:active {
+    background: var(--bg-active);
+  }
+
+  &--primary {
+    background: var(--accent);
+    border-color: transparent;
+    color: #ffffff;
+
+    &:active {
+      background: var(--accent-hover);
+    }
+  }
+
+  &--danger {
+    background: var(--error-bg);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: var(--error);
+
+    &:active {
+      background: var(--error);
+      color: #ffffff;
+    }
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+// ── Empty state ────────────────────────────────────────────────────────────
+
+.cron-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 24px;
+}
+
+.cron-empty__icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+
+.cron-empty__text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.cron-empty__hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}

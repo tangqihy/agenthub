@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import { usePolling } from '../../hooks/usePolling'
 import { api } from '../../services/api'
 import { formatTokens } from '../../services/types'
@@ -14,6 +15,7 @@ export default function AnalyticsPage() {
   const { data: daily } = usePolling(() => api.analyticsDaily(), 10000)
 
   return (
+      <AppLayout>
     <View className='page'>
       {summary && (
         <View className='section'>
@@ -68,5 +70,5 @@ export default function AnalyticsPage() {
 
       <BottomNav active='/pages/analytics/index' />
     </View>
-  )
+      </AppLayout>)
 }

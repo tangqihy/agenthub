@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import Taro, { useRouter } from '@tarojs/taro'
 import { Tag } from '@nutui/nutui-react-taro'
 import { usePolling } from '../../hooks/usePolling'
@@ -18,7 +19,8 @@ export default function SessionDetailPage() {
   if (!session) return <View className='page'>加载中...</View>
 
   return (
-    <View className='page'>
+    <AppLayout>
+      <View className='page'>
       <View className='section'>
         <View style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={{ fontSize: 18, fontWeight: 600 }}>{session.title}</Text>
@@ -67,5 +69,6 @@ export default function SessionDetailPage() {
         <EventTimeline events={events || []} />
       </View>
     </View>
+    </AppLayout>
   )
 }

@@ -28,7 +28,6 @@
     border-bottom: 1px solid var(--border);
     z-index: 10;
 
-    .header-left,
     .header-right {
       width: 44px;
       height: 44px;
@@ -41,12 +40,6 @@
       &:active {
         background: var(--bg-hover);
       }
-    }
-
-    .back-icon {
-      font-size: 28px;
-      color: var(--text-primary);
-      font-weight: 600;
     }
 
     .new-chat-icon {

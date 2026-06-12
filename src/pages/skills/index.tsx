@@ -3,6 +3,7 @@
  * 支持本地skills + OpenClaw水产市场
  */
 import { View, Text, Input, ScrollView } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import Taro from '@tarojs/taro'
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '../../services/api'
@@ -66,6 +67,7 @@ export default function SkillsPage() {
   }, [])
 
   return (
+      <AppLayout>
     <View className='page'>
       {/* Header */}
       <View className='skills-header'>
@@ -178,5 +180,5 @@ export default function SkillsPage() {
 
       <BottomNav active='skills' />
     </View>
-  )
+      </AppLayout>)
 }

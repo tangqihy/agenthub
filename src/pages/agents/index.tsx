@@ -1,4 +1,5 @@
 import { View, Text, Input } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import Taro from '@tarojs/taro'
 import { useState } from 'react'
 import { usePolling } from '../../hooks/usePolling'
@@ -28,6 +29,7 @@ export default function AgentsPage() {
   )
 
   return (
+      <AppLayout>
     <PageTransition>
       <View className='page'>
         <View className='agents-header'>
@@ -88,5 +90,5 @@ export default function AgentsPage() {
         <BottomNav active='/pages/agents/index' />
       </View>
     </PageTransition>
-  )
+      </AppLayout>)
 }

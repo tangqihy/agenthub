@@ -1,238 +1,255 @@
-/**
- * SkillsPage Styles
- * Skills marketplace page
- */
+// ============================================================================
+// Skills Page Styles
+// Skills marketplace page with consistent dark theme
+// ============================================================================
 
-.skills-header {
-  padding: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  
-  .skills-title {
-    font-size: 40px;
-    font-weight: 700;
-    display: block;
-  }
-  
-  .skills-subtitle {
-    font-size: 26px;
-    opacity: 0.9;
-    margin-top: 8px;
-    display: block;
-  }
-}
+@import '../../styles/themes';
+
+// ── Tabs ───────────────────────────────────────────────────────────────────
 
 .source-tabs {
   display: flex;
-  background: #fff;
-  border-bottom: 1px solid #e8e8e8;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
   padding: 0 24px;
-  
+  margin-bottom: 0;
+
   .source-tab {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 20px 0;
+    padding: 14px 0;
     border-bottom: 3px solid transparent;
-    
+    transition: all 0.15s ease;
+
     &.active {
-      border-bottom-color: #1890ff;
-      
+      border-bottom-color: var(--accent-text);
+
       .tab-label {
-        color: #1890ff;
+        color: var(--accent-text);
         font-weight: 600;
       }
     }
-    
+
     &:active {
-      background: #f5f5f5;
+      background: var(--bg-hover);
     }
-    
+
     .tab-icon {
-      font-size: 28px;
+      font-size: 16px;
     }
-    
+
     .tab-label {
-      font-size: 26px;
-      color: #666;
+      font-size: 13px;
+      color: var(--text-secondary);
     }
   }
 }
 
+// ── Search ─────────────────────────────────────────────────────────────────
+
 .skills-search {
-  padding: 16px 24px;
-  background: #fff;
-  border-bottom: 1px solid #e8e8e8;
-  
+  padding: 12px 24px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+
   .search-input {
     width: 100%;
-    height: 72px;
-    padding: 0 24px;
-    background: #f5f5f5;
-    border-radius: 36px;
-    font-size: 28px;
+    height: 42px;
+    padding: 0 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    color: var(--text-primary);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+
+    &:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-subtle);
+    }
   }
 }
+
+// ── Skills list ────────────────────────────────────────────────────────────
 
 .skills-list {
   flex: 1;
   padding: 16px 24px;
-  padding-bottom: 180px;
-  
-  .loading-state, .empty-state {
+  padding-bottom: 60px;
+
+  .loading-state,
+  .empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 100px 0;
-    
-    .loading-text, .empty-text {
-      font-size: 28px;
-      color: #999;
+    padding: 60px 0;
+
+    .loading-text,
+    .empty-text {
+      font-size: 14px;
+      color: var(--text-muted);
     }
-    
+
     .empty-icon {
-      font-size: 80px;
-      margin-bottom: 24px;
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.7;
     }
-    
+
     .empty-hint {
-      font-size: 24px;
-      color: #1890ff;
-      margin-top: 16px;
+      font-size: 12px;
+      color: var(--accent-text);
+      margin-top: 8px;
     }
   }
-  
+
+  // ── Skill card ──────────────────────────────────────────────────────────
+
   .skill-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 16px;
-    border: 1px solid #e8e8e8;
-    
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    transition: background 0.15s ease;
+
     &:active {
-      background: #fafafa;
+      background: var(--bg-hover);
     }
-    
+
     .skill-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 12px;
-      
+      margin-bottom: 10px;
+
       .skill-info {
         display: flex;
         align-items: center;
-        gap: 16px;
-        
+        gap: 12px;
+
         .skill-icon {
-          font-size: 40px;
+          font-size: 24px;
         }
-        
+
         .skill-meta {
           .skill-name {
-            font-size: 30px;
+            font-size: 15px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
             display: block;
           }
-          
+
           .skill-badges {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-top: 4px;
-            
-            .skill-source, .skill-category {
-              font-size: 20px;
-              padding: 2px 8px;
-              border-radius: 8px;
-            }
-            
-            .skill-source {
-              background: #e6f7ff;
-              color: #1890ff;
-            }
-            
+
+            .skill-source,
             .skill-category {
-              background: #f6ffed;
-              color: #52c41a;
+              font-size: 11px;
+              padding: 2px 8px;
+              border-radius: var(--radius-sm);
+              font-weight: 500;
+            }
+
+            .skill-source {
+              background: var(--accent-subtle);
+              color: var(--accent-text);
+            }
+
+            .skill-category {
+              background: var(--success-bg);
+              color: var(--success);
             }
           }
         }
       }
-      
+
       .skill-actions {
         .copy-btn {
-          width: 60px;
-          height: 60px;
+          width: 36px;
+          height: 36px;
           display: flex;
           align-items: center;
           justify-content: center;
           border-radius: 50%;
-          background: #f5f5f5;
-          
+          background: var(--bg-tertiary);
+          transition: background 0.15s ease;
+
           &:active {
-            background: #e8e8e8;
+            background: var(--bg-active);
           }
-          
+
           .copy-icon {
-            font-size: 28px;
+            font-size: 16px;
           }
         }
       }
     }
-    
+
     .skill-desc {
-      font-size: 26px;
-      color: #666;
+      font-size: 13px;
+      color: var(--text-muted);
       line-height: 1.5;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    
+
     .skill-stats {
       display: flex;
-      gap: 16px;
-      margin-top: 12px;
-      
+      gap: 12px;
+      margin-top: 10px;
+
       .stat {
-        font-size: 22px;
-        color: #999;
+        font-size: 12px;
+        color: var(--text-muted);
       }
     }
-    
+
     .skill-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-      
+      gap: 6px;
+      margin-top: 10px;
+
       .skill-tag {
-        font-size: 22px;
-        color: #1890ff;
-        background: #e6f7ff;
-        padding: 4px 12px;
-        border-radius: 16px;
+        font-size: 11px;
+        color: var(--accent-text);
+        background: var(--accent-subtle);
+        padding: 3px 10px;
+        border-radius: var(--radius-full);
       }
     }
   }
 }
 
+// ── Stats bar ──────────────────────────────────────────────────────────────
+
 .skills-stats-bar {
   position: fixed;
-  bottom: 120px;
+  bottom: 40px;
   left: 0;
   right: 0;
   text-align: center;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.7);
-  
+  padding: 10px;
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border);
+
   .stats-text {
-    font-size: 24px;
-    color: #fff;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
   }
 }

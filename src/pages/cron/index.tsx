@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import { Button, Tag } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
 import { usePolling } from '../../hooks/usePolling'
@@ -27,6 +28,7 @@ export default function CronPage() {
   }
 
   return (
+      <AppLayout>
     <View className='page'>
       {!online && <OfflineBanner />}
       {jobs?.map((job) => (
@@ -48,5 +50,5 @@ export default function CronPage() {
       ))}
       <BottomNav active='/pages/cron/index' />
     </View>
-  )
+      </AppLayout>)
 }

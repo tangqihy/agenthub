@@ -1,4 +1,5 @@
 import { View, Text, Input } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import Taro from '@tarojs/taro'
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { usePolling } from '../../hooks/usePolling'
@@ -323,6 +324,7 @@ export default function SessionsPage() {
   // ── Render ─────────────────────────────────────────────────────────────
 
   return (
+      <AppLayout>
     <PageTransition>
       <View className='page sessions-page'>
         {/* Search bar */}
@@ -407,5 +409,5 @@ export default function SessionsPage() {
         <BottomNav active='/pages/sessions/index' />
       </View>
     </PageTransition>
-  )
+      </AppLayout>)
 }

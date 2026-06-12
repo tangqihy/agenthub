@@ -1,4 +1,5 @@
 import { View, Text, Input, Textarea } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import { SkillPicker } from '../../components/SkillPicker'
 import Taro, { useRouter } from '@tarojs/taro'
 import { useState, useEffect } from 'react'
@@ -143,6 +144,7 @@ export default function AgentEditorPage() {
   }
 
   return (
+      <AppLayout>
     <View className='page'>
       <View className='editor-header'>
         <Text className='editor-title'>{isEdit ? '编辑 Agent' : '创建 Agent'}</Text>
@@ -336,5 +338,5 @@ export default function AgentEditorPage() {
 
       <BottomNav active='/pages/agents/index' />
     </View>
-  )
+      </AppLayout>)
 }

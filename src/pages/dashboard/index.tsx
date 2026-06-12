@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import { useEffect } from 'react'
 import { usePolling } from '../../hooks/usePolling'
 import { api } from '../../services/api'
@@ -71,6 +72,7 @@ export default function DashboardPage() {
   const { usage, by_source, active_sessions, top_sessions, gateways, cron_summary } = data
 
   return (
+      <AppLayout>
     <PageTransition>
       <View className='page'>
         {/* Header */}
@@ -203,5 +205,5 @@ export default function DashboardPage() {
         <BottomNav active='/pages/dashboard/index' />
       </View>
     </PageTransition>
-  )
+      </AppLayout>)
 }

@@ -13,6 +13,7 @@
  *  - Approve / Deny callbacks (toast stubs)
  */
 import { View, Text, ScrollView } from '@tarojs/components'
+import AppLayout from '../../components/Layout/AppLayout'
 import Taro, { useRouter } from '@tarojs/taro'
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { api } from '../../services/api'
@@ -397,6 +398,7 @@ export default function ChatPage() {
   }, [tokenUsage])
 
   return (
+      <AppLayout>
     <View className='chat-page'>
       {/* ── Fixed Header ── */}
       <View className='chat-header'>
@@ -551,5 +553,5 @@ export default function ChatPage() {
         placeholder={`向 ${agent?.name || 'Agent'} 提问...`}
       />
     </View>
-  )
+      </AppLayout>)
 }
