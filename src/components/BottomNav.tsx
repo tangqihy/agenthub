@@ -1,5 +1,6 @@
 import { View, Text } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { useIsMobile } from '../hooks/useIsMobile'
 import './BottomNav.scss'
 
 const TABS = [
@@ -11,6 +12,11 @@ const TABS = [
 ]
 
 export default function BottomNav({ active }: { active: string }) {
+  const isMobile = useIsMobile()
+
+  // Only render on mobile
+  if (!isMobile) return null
+
   return (
     <View className='bottom-nav'>
       <View className='bottom-nav__inner'>

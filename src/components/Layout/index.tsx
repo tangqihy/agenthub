@@ -1,6 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useState, useEffect } from 'react'
+import { useIsMobile } from '../../hooks/useIsMobile'
 import './index.scss'
 
 export interface LayoutProps {
@@ -28,22 +29,28 @@ const NAV_ITEMS: NavItem[] = [
 ]
 
 export default function Layout({ children, title, showBack, activePath }: LayoutProps) {
+  const isMobile = useIsMobile()
   const [collapsed, setCollapsed] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
 
   useEffect(() => {
-    // Load collapsed state from localStorage
     const savedCollapsed = localStorage.getItem('sidebar-collapsed')
     if (savedCollapsed === 'true') {
       setCollapsed(true)
     }
 
-    // Load theme from localStorage
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null
     if (savedTheme) {
       setTheme(savedTheme)
     }
   }, [])
+
+  // Auto-collapse sidebar on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setCollapsed(true)
+    }
+  }, [isMobile])
 
   const toggleCollapse = () => {
     const next = !collapsed
@@ -68,6 +75,47 @@ export default function Layout({ children, title, showBack, activePath }: Layout
     Taro.navigateBack()
   }
 
+  // ── Mobile Layout ──────────────────────────────────────────────────────
+  if (isMobile) {
+    return (
+      <View className='layout layout--mobile'>
+        {/* Mobile Top Bar */}
+        <View className='mobile-topbar'>
+          <View className='mobile-topbar__left'>
+            {showBack ? (
+              <View className='mobile-topbar__back' onClick={handleBack}>
+                <Text className='mobile-topbar__back-arrow'>←</Text>
+                <Text className='mobile-topbar__title'>{title || '返回'}</Text>
+              </View>
+            ) : (
+              <Text className='mobile-topbar__brand'>AgentHub</Text>
+            )}
+          </View>
+          <View className='mobile-topbar__right'>
+            <View
+              className={`mobile-topbar__theme-btn ${theme === 'dark' ? 'active' : ''}`}
+              onClick={() => toggleTheme('dark')}
+            >
+              <Text>🌙</Text>
+            </View>
+            <View
+              className={`mobile-topbar__theme-btn ${theme === 'light' ? 'active' : ''}`}
+              onClick={() => toggleTheme('light')}
+            >
+              <Text>☀️</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Main Content */}
+        <View className='main-content main-content--mobile'>
+          {children}
+        </View>
+      </View>
+    )
+  }
+
+  // ── Desktop Layout (Sidebar) ───────────────────────────────────────────
   return (
     <View className={`layout ${collapsed ? 'sidebar-collapsed' : ''}`}>
       <View className='sidebar'>
